@@ -4,10 +4,25 @@
   "description": "Build an RSS feed from various sources",
   "private": true,
   "license": "MIT",
-  "main": "src/main.ts",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
   "type": "module",
+  "bin": {
+    "rosso": "dist/bin.mjs"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "start": "node --experimental-strip-types src/main.ts",
+    "start": "node dist/bin.mjs",
+    "dev": "node --experimental-strip-types src/bin.ts",
+    "build": "tsdown src/index.ts src/bin.ts --dts --clean",
     "test": "node --experimental-strip-types --test",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
@@ -17,6 +32,7 @@
   "packageManager": "pnpm@10.8.1",
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsdown": "^0.17.4",
     "typescript": "^5.8.0"
   },
   "dependencies": {
