@@ -67,4 +67,3 @@ test('buildSource throws when cache is missing', async () => {
   const sourcePath = await setupSource(tempDir);
   await assert.rejects(buildSource({ cacheRoot, sourcePath }), /Missing cache/);
 });
-

@@ -101,4 +101,3 @@ test('handleBuild writes RSS to file when requested', async () => {
 
   logMock.mock.restore();
 });
-
