@@ -1,14 +1,4 @@
-export type FeedEntry = {
-  type: 'rss';
-  url: string;
-};
-
-export type SourceDefinition = {
-  name: string;
-  description: string;
-  link: string;
-  feeds: FeedEntry[];
-};
+export type { FeedEntry, SourceDefinition } from './schema.ts';
 
 export type CachedItem = {
   title: string | null;

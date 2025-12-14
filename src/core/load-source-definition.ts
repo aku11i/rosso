@@ -1,19 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import YAML from 'yaml';
-import { z } from 'zod';
-import type { SourceDefinition } from '../types.ts';
-
-const feedEntrySchema = z.object({
-  type: z.literal('rss'),
-  url: z.string().trim().min(1, 'Feed URL is required'),
-});
-
-const sourceSchema = z.object({
-  name: z.string().trim().min(1, 'name is required'),
-  description: z.string().trim().min(1, 'description is required'),
-  link: z.string().trim().min(1, 'link is required'),
-  feeds: z.array(feedEntrySchema).min(1, 'feeds must include at least one entry'),
-});
+import type { SourceDefinition } from '../schema.ts';
+import { sourceSchema } from '../schema.ts';
 
 export async function loadSourceDefinition(sourcePath: string): Promise<SourceDefinition> {
   const yamlText = await readFile(sourcePath, 'utf8');
