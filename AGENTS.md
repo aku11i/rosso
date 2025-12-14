@@ -35,8 +35,8 @@
 - `source.yaml` required fields: `name`, `description`, `link`, `feeds`.
 - `feeds` entries: `{ type: rss, url: string }` (dedupe duplicate entries via a Set).
 - Commands:
-  - `rosso fetch [source.yaml] [--cache-dir <dir>]`: fetch sources and update cache.
-  - `rosso build [source.yaml] [--cache-dir <dir>]`: build the aggregated RSS feed from cache (offline; no network access).
+  - `rosso fetch [source] [--cache-dir <dir>]`: fetch sources and update cache.
+  - `rosso build [source] [--cache-dir <dir>]`: build the aggregated RSS feed from cache (offline; no network access).
 - Cache:
   - Default location: OS standard user cache directory.
   - Override via `--cache-dir`.
