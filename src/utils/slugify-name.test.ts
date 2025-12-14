@@ -10,6 +10,6 @@ test('slugifyName collapses symbols and trims', () => {
   assert.equal(slugifyName('  Hello!! World??  '), 'hello-world');
 });
 
-test('slugifyName returns fallback for empty input', () => {
-  assert.equal(slugifyName('***'), 'source');
+test('slugifyName throws for empty input', () => {
+  assert.throws(() => slugifyName('***'));
 });
