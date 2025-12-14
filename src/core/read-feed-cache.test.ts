@@ -3,17 +3,17 @@ import test from 'node:test';
 import { mkdtemp, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { readCacheFile } from './read-cache-file.ts';
+import { readFeedCache } from './read-feed-cache.ts';
 import type { CachedFeed } from '../types.ts';
 
-test('readCacheFile returns null when missing', async () => {
+test('readFeedCache returns null when missing', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'rosso-cache-read-'));
   const cachePath = path.join(dir, 'feed.json');
-  const result = await readCacheFile(cachePath);
+  const result = await readFeedCache(cachePath);
   assert.equal(result, null);
 });
 
-test('readCacheFile parses existing cache', async () => {
+test('readFeedCache parses existing cache', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'rosso-cache-read-'));
   const cachePath = path.join(dir, 'feed.json');
   const cache: CachedFeed = {
@@ -24,6 +24,6 @@ test('readCacheFile parses existing cache', async () => {
   };
   await writeFile(cachePath, JSON.stringify(cache), 'utf8');
 
-  const result = await readCacheFile(cachePath);
+  const result = await readFeedCache(cachePath);
   assert.deepEqual(result, cache);
 });

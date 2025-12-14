@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import type { CachedFeed } from '../types.ts';
 
-export async function readCacheFile(cachePath: string): Promise<CachedFeed | null> {
+export async function readFeedCache(cachePath: string): Promise<CachedFeed | null> {
   try {
     const content = await readFile(cachePath, 'utf8');
     return JSON.parse(content) as CachedFeed;

@@ -2,8 +2,8 @@ import type { CachedFeed, CachedItem } from '../types.ts';
 import { fetchFeed } from './fetch-feed.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
-import { readCacheFile } from './read-cache-file.ts';
-import { writeCacheFile } from './write-cache-file.ts';
+import { readFeedCache } from './read-feed-cache.ts';
+import { writeFeedCache } from './write-feed-cache.ts';
 
 export type FetchSourceOptions = {
   cacheDir: string;
@@ -35,7 +35,7 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
     const cachePath = getFeedCachePath(options.cacheDir, feedUrl);
     cachePaths.push(cachePath);
 
-    const previousFeed = await readCacheFile(cachePath);
+    const previousFeed = await readFeedCache(cachePath);
     const fetchedFeed = await fetchFeed(feedUrl, fetchTimestamp);
 
     const combinedItems: CachedItem[] = [];
@@ -71,7 +71,7 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
       items: combinedItems,
     };
 
-    await writeCacheFile(cachePath, mergedFeed);
+    await writeFeedCache(cachePath, mergedFeed);
     feeds.push(mergedFeed);
   }
 
