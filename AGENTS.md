@@ -4,8 +4,9 @@
 - Use English for all repository artifacts: code comments, docs, filenames, commit messages, Issues, Pull Requests, and Releases.
 
 ## Project Structure & Module Organization
-- Current tree: `README.md`, `LICENSE`. Add application code under `src/`, unit tests under `tests/`, helper scripts under `scripts/`, and docs under `docs/`. Use `assets/` for static files and `examples/fixtures/` for sample data.
-- Keep modules small; one responsibility per file. Choose a single entry point such as `src/main.*` or `src/lib.*` and mirror that layout inside `tests/`.
+- Current tree: `README.md`, `LICENSE`. Add application code under `src/`, helper scripts under `scripts/`, and docs under `docs/`. Use `assets/` for static files and `examples/fixtures/` for sample data.
+- Unit tests should be colocated with their implementation files under `src/` as `*.test.ts` (preferred). A top-level `tests/` directory is allowed for integration-style tests or large fixtures when colocating is impractical.
+- Keep modules small; one responsibility per file. Choose a single entry point such as `src/main.*` or `src/lib.*`; if you use a separate `tests/` directory, mirror the `src/` layout there.
 - Rosso initial layout:
   - `src/main.ts`: entry point.
   - `src/index.ts`: exports the `src/core` public API.
@@ -45,7 +46,8 @@
 - Parsers: YAML `yaml`; RSS `@rowanmanning/feed-parser`.
 
 ## Testing Guidelines
-- Mirror source structure inside `tests/`; name files `<module>_test.<ext>` or `<module>.spec.<ext>`.
+- Prefer colocated tests next to implementation under `src/` named `<module>.test.ts`.
+- If using `tests/`, mirror source structure and name files `<module>_test.<ext>` or `<module>.spec.<ext>`.
 - Target ≥80% coverage once tooling is in place; add regression tests alongside bug fixes.
 - Store fixtures under `tests/fixtures/`; keep integration tests hermetic (no network calls without mocks).
 

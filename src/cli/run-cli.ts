@@ -1,10 +1,12 @@
 import { handleFetch } from './handle-fetch.ts';
+import { handleBuild } from './handle-build.ts';
 
 const usageText =
   'Usage: rosso <command>\n' +
   '\n' +
   'Commands:\n' +
   '  fetch [source] [--cache-dir <dir>]  Fetch RSS feeds defined in a source.yaml file\n' +
+  '  build <source> [--cache-dir <dir>] [--output-file <file>]  Build an aggregated RSS feed from cached data\n' +
   '  --help                               Show this message\n';
 
 export async function runCli(argv: string[]) {
@@ -18,6 +20,11 @@ export async function runCli(argv: string[]) {
 
   if (command === 'fetch') {
     await handleFetch(rest);
+    return;
+  }
+
+  if (command === 'build') {
+    await handleBuild(rest);
     return;
   }
 
