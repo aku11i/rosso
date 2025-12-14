@@ -4,6 +4,7 @@ import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { runCli } from './run-cli.ts';
+import { getFeedCachePath } from '../core/get-feed-cache-path.ts';
 
 const sampleRss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -58,11 +59,11 @@ test('runCli runs fetch command end-to-end', async () => {
   await runCli(['fetch', '--cache-dir', cacheDir]);
   process.chdir(cwd);
 
-  const cachePath = path.join(cacheDir, 'example-source.json');
+  const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
   const cacheContent = JSON.parse(await readFile(cachePath, 'utf8'));
 
   assert.equal(fetchMock.mock.callCount(), 1);
-  assert.equal(cacheContent.feeds[0].items[0].title, 'Item');
+  assert.equal(cacheContent.items[0].title, 'Item');
 
   fetchMock.mock.restore();
   logMock.mock.restore();

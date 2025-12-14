@@ -29,11 +29,11 @@ export async function handleFetch(argv: string[]) {
   const result = await fetchSource({ cacheDir, sourcePath });
 
   let totalItems = 0;
-  for (const feed of result.cache.feeds) {
+  for (const feed of result.feeds) {
     totalItems += feed.items.length;
   }
 
   console.log(
-    `Fetched ${result.cache.feeds.length} feeds (${totalItems} items) into ${result.cachePath}`,
+    `Fetched ${result.feeds.length} feeds (${totalItems} items) into ${result.cacheDir}`,
   );
 }

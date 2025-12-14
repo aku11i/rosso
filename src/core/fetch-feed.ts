@@ -1,10 +1,10 @@
 import { parseFeed } from '@rowanmanning/feed-parser';
-import type { CachedItem } from '../types.ts';
+import type { CachedFeed, CachedItem } from '../types.ts';
 
-export async function fetchFeedItems(
+export async function fetchFeed(
   feedUrl: string,
   fetchTimestamp: string,
-): Promise<CachedItem[]> {
+): Promise<CachedFeed> {
   const response = await fetch(feedUrl);
 
   if (!response.ok) {
@@ -38,5 +38,10 @@ export async function fetchFeedItems(
     });
   }
 
-  return items;
+  return {
+    title: feed.title ?? null,
+    description: feed.description ?? null,
+    url: feedUrl,
+    items,
+  };
 }

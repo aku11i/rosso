@@ -4,6 +4,7 @@ import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { handleFetch } from './handle-fetch.ts';
+import { getFeedCachePath } from '../core/get-feed-cache-path.ts';
 
 const sampleRss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -59,12 +60,12 @@ test('handleFetch fetches default source and writes cache', async () => {
   await handleFetch(['--cache-dir', cacheDir]);
   process.chdir(cwd);
 
-  const cachePath = path.join(cacheDir, 'example-source.json');
+  const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
   const cacheContent = JSON.parse(await readFile(cachePath, 'utf8'));
 
   assert.equal(fetchMock.mock.callCount(), 1);
-  assert.equal(cacheContent.feeds.length, 1);
-  assert.equal(cacheContent.feeds[0].items.length, 1);
+  assert.equal(cacheContent.items.length, 1);
+  assert.equal(cacheContent.title, 'Feed');
   assert.ok(logMock.mock.calls[0]?.arguments[0].includes('Fetched 1 feeds (1 items)'));
 
   fetchMock.mock.restore();
@@ -89,11 +90,11 @@ test('handleFetch uses custom source path', async () => {
   await handleFetch(['custom.yaml', '--cache-dir', cacheDir]);
   process.chdir(cwd);
 
-  const cachePath = path.join(cacheDir, 'example-source.json');
+  const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
   const cacheContent = JSON.parse(await readFile(cachePath, 'utf8'));
 
   assert.equal(fetchMock.mock.callCount(), 1);
-  assert.equal(cacheContent.feeds[0].items[0].link, 'https://example.com/a');
+  assert.equal(cacheContent.items[0].link, 'https://example.com/a');
   assert.ok(logMock.mock.calls[0]?.arguments[0].includes('Fetched 1 feeds (1 items)'));
 
   fetchMock.mock.restore();

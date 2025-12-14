@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import test, { mock } from 'node:test';
-import { mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdtemp, writeFile, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { fetchSource } from './fetch-source.ts';
-import type { SourceCache } from '../types.ts';
+import { getFeedCachePath } from './get-feed-cache-path.ts';
+import type { CachedFeed } from '../types.ts';
 
 const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -36,21 +37,17 @@ test('fetchSource dedupes feeds and merges cache', async () => {
     'utf8',
   );
 
-  const cachePath = path.join(cacheDir, 'example-source.json');
-  const previousCache: SourceCache = {
-    source: { name: 'Example Source', description: 'Demo source', link: 'https://example.com' },
-    fetchedAt: '2024-03-30T00:00:00.000Z',
-    feeds: [
+  const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
+  const previousCache: CachedFeed = {
+    title: 'Old title',
+    description: null,
+    url: 'https://example.com/feed.xml',
+    items: [
       {
-        url: 'https://example.com/feed.xml',
-        items: [
-          {
-            title: 'Old',
-            description: null,
-            link: 'https://example.com/a',
-            timestamp: '2024-03-30T00:00:00.000Z',
-          },
-        ],
+        title: 'Old',
+        description: null,
+        link: 'https://example.com/a',
+        timestamp: '2024-03-30T00:00:00.000Z',
       },
     ],
   };
@@ -66,13 +63,17 @@ test('fetchSource dedupes feeds and merges cache', async () => {
   const result = await fetchSource({ cacheDir, sourcePath });
 
   assert.equal(fetchMock.mock.callCount(), 1);
-  assert.equal(result.cachePath, cachePath);
-  assert.equal(result.cache.feeds.length, 1);
-  const items = result.cache.feeds[0].items;
+  assert.equal(result.cachePaths[0], cachePath);
+  assert.equal(result.feeds.length, 1);
+  const items = result.feeds[0].items;
   assert.equal(items.length, 1);
   assert.equal(items[0].title, 'Fresh');
   assert.equal(items[0].timestamp, '2024-04-01T00:00:00.000Z');
-  assert.ok(Date.parse(result.cache.fetchedAt));
+  assert.ok(Date.parse(result.fetchedAt));
+
+  const diskCache = JSON.parse(await readFile(cachePath, 'utf8')) as CachedFeed;
+  assert.equal(diskCache.title, 'Feed');
+  assert.equal(diskCache.items[0].title, 'Fresh');
 
   fetchMock.mock.restore();
 });

@@ -1,10 +1,10 @@
 import { readFile } from 'node:fs/promises';
-import type { SourceCache } from '../types.ts';
+import type { CachedFeed } from '../types.ts';
 
-export async function readCacheFile(cachePath: string): Promise<SourceCache | null> {
+export async function readCacheFile(cachePath: string): Promise<CachedFeed | null> {
   try {
     const content = await readFile(cachePath, 'utf8');
-    return JSON.parse(content) as SourceCache;
+    return JSON.parse(content) as CachedFeed;
   } catch (error) {
     const code = error && typeof error === 'object' ? (error as { code?: string }).code : null;
     if (code === 'ENOENT') {

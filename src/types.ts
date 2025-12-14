@@ -18,16 +18,8 @@ export type CachedItem = {
 };
 
 export type CachedFeed = {
+  title: string | null;
+  description: string | null;
   url: string;
   items: CachedItem[];
-};
-
-export type SourceCache = {
-  source: {
-    name: string;
-    description: string;
-    link: string;
-  };
-  fetchedAt: string;
-  feeds: CachedFeed[];
 };

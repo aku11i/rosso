@@ -17,4 +17,5 @@ Node.js CLI for fetching RSS feeds defined in a `source.yaml` file and caching t
 ## Cache
 - Default location: OS user cache dir (e.g., `$XDG_CACHE_HOME/rosso` on Linux)
 - Override with `--cache-dir`
-- Stored JSON per source: `item.title`, `item.description`, `item.link`, `item.timestamp`
+- Stored JSON per feed (filename = sha256 hash of feed URL) and reused across sources
+- Each cached feed stores `title`, `description`, `url`, `items[]` with `title`, `description`, `link`, `timestamp`
