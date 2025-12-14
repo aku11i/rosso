@@ -34,14 +34,12 @@ export async function buildSource(options: BuildSourceOptions): Promise<string> 
 
   const items = aggregateFeedItems(cachedFeeds);
 
-  const updated = items[0]?.date ?? new Date();
-
   const feed = new Feed({
     title: definition.name,
     description: definition.description,
     id: definition.link,
     link: definition.link,
-    updated,
+    updated: new Date(),
     generator: 'rosso',
   });
 
