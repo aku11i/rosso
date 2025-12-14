@@ -8,12 +8,17 @@
   "type": "module",
   "scripts": {
     "start": "node --experimental-strip-types src/main.ts",
-    "test": "node --experimental-strip-types --test"
+    "test": "node --experimental-strip-types --test",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "engines": {
     "node": ">=22.0.0"
   },
   "packageManager": "pnpm@10.8.1",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  },
   "dependencies": {
     "@rowanmanning/feed-parser": "^2.1.1",
     "env-paths": "^3.0.0",
