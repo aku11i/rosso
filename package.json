@@ -1,7 +1,7 @@
 {
-  "name": "rosso",
+  "name": "@aku11i/rosso",
   "version": "0.1.0",
-  "description": "CLI for fetching and caching RSS feeds defined in source.yaml files.",
+  "description": "Build an RSS feed from various sources",
   "private": true,
   "license": "MIT",
   "main": "src/main.ts",
