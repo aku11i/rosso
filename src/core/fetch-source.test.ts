@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test, { mock } from 'node:test';
-import { mkdtemp, writeFile, readFile } from 'node:fs/promises';
+import { mkdtemp, writeFile, readFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { fetchSource } from './fetch-source.ts';
@@ -20,8 +20,8 @@ const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 </rss>`;
 
 test('fetchSource dedupes feeds and merges cache', async () => {
-  const cacheDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-fetch-source-'));
-  const sourcePath = path.join(cacheDir, 'source.yaml');
+  const cacheRoot = await mkdtemp(path.join(os.tmpdir(), 'rosso-fetch-source-'));
+  const sourcePath = path.join(cacheRoot, 'source.yaml');
   await writeFile(
     sourcePath,
     [
@@ -37,7 +37,7 @@ test('fetchSource dedupes feeds and merges cache', async () => {
     'utf8',
   );
 
-  const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
+  const cachePath = getFeedCachePath(cacheRoot, 'https://example.com/feed.xml');
   const previousCache: CachedFeed = {
     title: 'Old title',
     description: null,
@@ -51,6 +51,7 @@ test('fetchSource dedupes feeds and merges cache', async () => {
       },
     ],
   };
+  await mkdir(path.dirname(cachePath), { recursive: true });
   await writeFile(cachePath, JSON.stringify(previousCache), 'utf8');
 
   const fetchMock = mock.method(globalThis, 'fetch', async () => ({
@@ -60,7 +61,7 @@ test('fetchSource dedupes feeds and merges cache', async () => {
     text: async () => rssFeed,
   }));
 
-  const result = await fetchSource({ cacheDir, sourcePath });
+  const result = await fetchSource({ cacheRoot, sourcePath });
 
   assert.equal(fetchMock.mock.callCount(), 1);
   assert.equal(result.cachePaths[0], cachePath);

@@ -1,6 +1,6 @@
 import { parseArgs } from 'node:util';
 import { fetchSource } from '../core/fetch-source.ts';
-import { getDefaultCacheDir } from '../utils/get-default-cache-dir.ts';
+import { getDefaultCacheRoot } from '../utils/get-default-cache-root.ts';
 
 const usageText =
   'Usage: rosso fetch [source] [--cache-dir <dir>]\n' +
@@ -25,8 +25,8 @@ export async function handleFetch(argv: string[]) {
   }
 
   const sourcePath = positionals[0] ?? 'source.yaml';
-  const cacheDir = values['cache-dir'] ?? getDefaultCacheDir();
-  const result = await fetchSource({ cacheDir, sourcePath });
+  const cacheRoot = values['cache-dir'] ?? getDefaultCacheRoot();
+  const result = await fetchSource({ cacheRoot, sourcePath });
 
   let totalItems = 0;
   for (const feed of result.feeds) {
@@ -34,6 +34,6 @@ export async function handleFetch(argv: string[]) {
   }
 
   console.log(
-    `Fetched ${result.feeds.length} feeds (${totalItems} items) into ${result.cacheDir}`,
+    `Fetched ${result.feeds.length} feeds (${totalItems} items) into ${result.cacheRoot}`,
   );
 }

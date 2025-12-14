@@ -7,5 +7,5 @@ import { hashFeedUrl } from '../utils/hash-feed-url.ts';
 test('getFeedCachePath uses hashed feed url', () => {
   const hash = hashFeedUrl('https://example.com/feed.xml');
   const targetPath = getFeedCachePath('/tmp/cache', 'https://example.com/feed.xml');
-  assert.equal(targetPath, path.join('/tmp/cache', `${hash}.json`));
+  assert.equal(targetPath, path.join('/tmp/cache', 'feeds', `${hash}.json`));
 });

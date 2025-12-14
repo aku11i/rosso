@@ -6,12 +6,12 @@ import { readFeedCache } from './read-feed-cache.ts';
 import { writeFeedCache } from './write-feed-cache.ts';
 
 export type FetchSourceOptions = {
-  cacheDir: string;
+  cacheRoot: string;
   sourcePath: string;
 };
 
 export type FetchSourceResult = {
-  cacheDir: string;
+  cacheRoot: string;
   cachePaths: string[];
   feeds: CachedFeed[];
   fetchedAt: string;
@@ -32,7 +32,7 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
   const cachePaths: string[] = [];
 
   for (const feedUrl of feedUrls) {
-    const cachePath = getFeedCachePath(options.cacheDir, feedUrl);
+    const cachePath = getFeedCachePath(options.cacheRoot, feedUrl);
     cachePaths.push(cachePath);
 
     const previousFeed = await readFeedCache(cachePath);
@@ -76,7 +76,7 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
   }
 
   return {
-    cacheDir: options.cacheDir,
+    cacheRoot: options.cacheRoot,
     cachePaths,
     feeds,
     fetchedAt: fetchTimestamp,
