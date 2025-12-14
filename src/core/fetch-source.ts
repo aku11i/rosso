@@ -2,6 +2,7 @@ import type { CachedFeed, CachedItem } from '../schema.ts';
 import { fetchFeed } from './fetch-feed.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
+import { mergeFeedCache } from './merge-feed-cache.ts';
 import { readFeedCache } from './read-feed-cache.ts';
 import { writeFeedCache } from './write-feed-cache.ts';
 
@@ -33,38 +34,7 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
     const previousFeed = await readFeedCache(cachePath);
     const fetchedFeed = await fetchFeed(feedUrl, fetchTimestamp);
 
-    const combinedItems: CachedItem[] = [];
-    const seenLinks = new Set<string>();
-
-    for (const item of previousFeed?.items ?? []) {
-      if (seenLinks.has(item.link)) {
-        continue;
-      }
-      seenLinks.add(item.link);
-      combinedItems.push(item);
-    }
-
-    for (const item of fetchedFeed.items) {
-      if (seenLinks.has(item.link)) {
-        for (let index = 0; index < combinedItems.length; index += 1) {
-          if (combinedItems[index].link === item.link) {
-            combinedItems[index] = item;
-            break;
-          }
-        }
-        continue;
-      }
-
-      seenLinks.add(item.link);
-      combinedItems.push(item);
-    }
-
-    const mergedFeed: CachedFeed = {
-      title: fetchedFeed.title ?? previousFeed?.title ?? null,
-      description: fetchedFeed.description ?? previousFeed?.description ?? null,
-      url: feedUrl,
-      items: combinedItems,
-    };
+    const mergedFeed = mergeFeedCache(previousFeed, fetchedFeed);
 
     await writeFeedCache(cachePath, mergedFeed);
     feeds.push(mergedFeed);
