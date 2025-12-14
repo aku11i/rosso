@@ -1,0 +1,5 @@
+{
+  "postCreate": {
+    "commands": ["pnpm install"]
+  }
+}
