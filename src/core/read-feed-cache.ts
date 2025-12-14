@@ -1,10 +1,15 @@
 import { readFile } from 'node:fs/promises';
-import type { CachedFeed } from '../types.ts';
+import { cachedFeedSchema, type CachedFeed } from '../schema.ts';
 
 export async function readFeedCache(cachePath: string): Promise<CachedFeed | null> {
   try {
     const content = await readFile(cachePath, 'utf8');
-    return JSON.parse(content) as CachedFeed;
+    const parsedJson = JSON.parse(content);
+    const result = cachedFeedSchema.safeParse(parsedJson);
+    if (!result.success) {
+      return null;
+    }
+    return result.data;
   } catch (error) {
     const code = error && typeof error === 'object' ? (error as { code?: string }).code : null;
     if (code === 'ENOENT') {

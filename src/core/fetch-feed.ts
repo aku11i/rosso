@@ -1,5 +1,5 @@
 import { parseFeed } from '@rowanmanning/feed-parser';
-import type { CachedFeed, CachedItem } from '../types.ts';
+import type { CachedFeed, CachedItem } from '../schema.ts';
 
 export async function fetchFeed(
   feedUrl: string,

@@ -4,7 +4,7 @@ import { mkdtemp, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { writeFeedCache } from './write-feed-cache.ts';
-import type { CachedFeed } from '../types.ts';
+import type { CachedFeed } from '../schema.ts';
 
 test('writeFeedCache writes JSON cache to disk', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'rosso-cache-write-'));

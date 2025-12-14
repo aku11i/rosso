@@ -5,6 +5,20 @@ export const feedEntrySchema = z.object({
   url: z.string().trim().min(1, 'Feed URL is required'),
 });
 
+export const cachedItemSchema = z.object({
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  link: z.string(),
+  timestamp: z.string(),
+});
+
+export const cachedFeedSchema = z.object({
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  url: z.string(),
+  items: z.array(cachedItemSchema),
+});
+
 export const sourceSchema = z.object({
   name: z.string().trim().min(1, 'name is required'),
   description: z.string().trim().min(1, 'description is required'),
@@ -13,4 +27,6 @@ export const sourceSchema = z.object({
 });
 
 export type FeedEntry = z.infer<typeof feedEntrySchema>;
+export type CachedItem = z.infer<typeof cachedItemSchema>;
+export type CachedFeed = z.infer<typeof cachedFeedSchema>;
 export type SourceDefinition = z.infer<typeof sourceSchema>;

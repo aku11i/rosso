@@ -5,7 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { fetchSource } from './fetch-source.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
-import type { CachedFeed } from '../types.ts';
+import type { CachedFeed } from '../schema.ts';
 
 const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">

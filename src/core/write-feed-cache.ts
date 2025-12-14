@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { CachedFeed } from '../types.ts';
+import type { CachedFeed } from '../schema.ts';
 
 export async function writeFeedCache(cachePath: string, cache: CachedFeed) {
   await mkdir(path.dirname(cachePath), { recursive: true });

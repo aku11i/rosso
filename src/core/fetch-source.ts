@@ -1,4 +1,4 @@
-import type { CachedFeed, CachedItem } from '../types.ts';
+import type { CachedFeed, CachedItem } from '../schema.ts';
 import { fetchFeed } from './fetch-feed.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
