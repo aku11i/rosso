@@ -1,0 +1,16 @@
+{
+  "name": "rosso",
+  "version": "0.1.0",
+  "description": "Initial pnpm-managed project skeleton.",
+  "private": true,
+  "license": "MIT",
+  "main": "src/main.ts",
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types src/main.ts"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "pnpm@10.8.1"
+}
