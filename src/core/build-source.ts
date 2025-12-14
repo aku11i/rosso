@@ -39,6 +39,7 @@ export async function buildSource(options: BuildSourceOptions): Promise<string> 
     description: definition.description,
     id: definition.link,
     link: definition.link,
+    copyright: '',
     updated: new Date(),
     generator: 'rosso',
   });
