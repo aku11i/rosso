@@ -4,8 +4,9 @@ import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { handleBuild } from './handle-build.ts';
-import { getFeedCachePath } from '../core/get-feed-cache-path.ts';
+import { getSourceFeedCachePath } from '../core/get-source-feed-cache-path.ts';
 import { writeFeedCache } from '../core/write-feed-cache.ts';
+import { hashSourcePath } from '../utils/hash-source-path.ts';
 
 async function setupSource(directory: string, filename = 'source.yaml') {
   const sourcePath = path.join(directory, filename);
@@ -37,8 +38,13 @@ test('handleBuild outputs RSS to stdout by default', async () => {
   const cacheDir = path.join(tempDir, 'cache');
   const sourcePath = await setupSource(tempDir);
 
-  const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
-  await writeFeedCache(cachePath, {
+  const sourceHash = await hashSourcePath(sourcePath);
+  const processedCachePath = getSourceFeedCachePath(
+    cacheDir,
+    sourceHash,
+    'https://example.com/feed.xml',
+  );
+  await writeFeedCache(processedCachePath, {
     title: 'Feed',
     description: null,
     url: 'https://example.com/feed.xml',
@@ -71,8 +77,13 @@ test('handleBuild writes RSS to file when requested', async () => {
   const cacheDir = path.join(tempDir, 'cache');
   const sourcePath = await setupSource(tempDir);
 
-  const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
-  await writeFeedCache(cachePath, {
+  const sourceHash = await hashSourcePath(sourcePath);
+  const processedCachePath = getSourceFeedCachePath(
+    cacheDir,
+    sourceHash,
+    'https://example.com/feed.xml',
+  );
+  await writeFeedCache(processedCachePath, {
     title: 'Feed',
     description: null,
     url: 'https://example.com/feed.xml',
