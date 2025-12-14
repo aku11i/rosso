@@ -28,7 +28,7 @@ export async function fetchFeed(
     const timestampSource = item.published ?? item.updated;
     const timestamp =
       timestampSource instanceof Date ? timestampSource.toISOString() : fetchTimestamp;
-    const description = item.description ?? item.content ?? null;
+    const description = item.description ?? null;
 
     items.push({
       title: item.title ?? null,
