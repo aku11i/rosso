@@ -1,7 +1,7 @@
 import { Feed } from 'feed';
 import type { CachedFeed } from '../schema.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
-import { collectAggregatedItems } from './collect-aggregated-items.ts';
+import { aggregateFeedItems } from './aggregate-feed-items.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
 import { readFeedCache } from './read-feed-cache.ts';
 
@@ -32,7 +32,7 @@ export async function buildSource(options: BuildSourceOptions): Promise<string> 
     cachedFeeds.push(cached);
   }
 
-  const items = collectAggregatedItems(cachedFeeds, options.sourcePath);
+  const items = aggregateFeedItems(cachedFeeds);
 
   const updated = items[0]?.date ?? new Date();
 

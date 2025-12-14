@@ -9,7 +9,7 @@ export type AggregatedItem = {
   date: Date;
 };
 
-export function collectAggregatedItems(cachedFeeds: CachedFeed[], sourcePath: string) {
+export function aggregateFeedItems(cachedFeeds: CachedFeed[]) {
   const seen = new Set<string>();
   const items: AggregatedItem[] = [];
 
@@ -24,7 +24,7 @@ export function collectAggregatedItems(cachedFeeds: CachedFeed[], sourcePath: st
       const date = new Date(item.timestamp);
       if (!isValidDate(date)) {
         throw new Error(
-          `Invalid timestamp in cache for ${cachedFeed.url}: ${item.timestamp} (${sourcePath})`,
+          `Invalid timestamp in cache for ${cachedFeed.url}: ${item.timestamp}`,
         );
       }
 
@@ -42,4 +42,3 @@ export function collectAggregatedItems(cachedFeeds: CachedFeed[], sourcePath: st
 
   return items;
 }
-
