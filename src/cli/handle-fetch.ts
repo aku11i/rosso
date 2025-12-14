@@ -12,6 +12,7 @@ const usageText =
 export async function handleFetch(argv: string[]) {
   const { values, positionals } = parseArgs({
     args: argv,
+    strict: true,
     allowPositionals: true,
     options: {
       'cache-dir': { type: 'string' },
