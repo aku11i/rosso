@@ -6,6 +6,7 @@ Node.js CLI for fetching RSS feeds defined in a `source.yaml` file and caching t
 - Install dependencies: `pnpm install`
 - See commands: `pnpm start -- --help`
 - Fetch sources: `pnpm start -- fetch [source.yaml] [--cache-dir <dir>]`
+- Run tests: `pnpm test`
 - Requires Node.js 22 or newer
 
 ## Source file
