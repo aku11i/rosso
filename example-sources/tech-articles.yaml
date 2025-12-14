@@ -1,0 +1,8 @@
+name: Tech Articles (Trends)
+description: Trending engineering articles from Zenn and Qiita.
+link: https://example.com/tech-articles
+feeds:
+  - type: rss
+    url: https://zenn.dev/feed
+  - type: rss
+    url: https://qiita.com/popular-items/feed
