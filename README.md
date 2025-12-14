@@ -5,6 +5,7 @@ Node.js CLI for fetching RSS feeds defined in a `source.yaml` file and caching t
 ## Getting started
 - Install dependencies: `pnpm install`
 - See commands: `pnpm start -- --help`
+- Build `dist/`: `pnpm build`
 - Fetch sources: `pnpm start -- fetch <source.yaml> [--cache-dir <dir>]`
 - Build aggregated RSS: `pnpm start -- build <source.yaml> [--cache-dir <dir>] [--output-file <file>]`
 - Run tests: `pnpm test`
