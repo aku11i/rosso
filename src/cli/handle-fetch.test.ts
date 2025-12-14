@@ -46,7 +46,7 @@ test('handleFetch fetches default source and writes cache', async () => {
   const cwd = process.cwd();
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-handle-fetch-'));
   const cacheDir = path.join(tempDir, 'cache');
-  await setupSource(tempDir);
+  const sourcePath = await setupSource(tempDir);
 
   const fetchMock = mock.method(globalThis, 'fetch', async () => ({
     ok: true,
@@ -57,7 +57,7 @@ test('handleFetch fetches default source and writes cache', async () => {
   const logMock = mock.method(console, 'log', () => {});
 
   process.chdir(tempDir);
-  await handleFetch(['--cache-dir', cacheDir]);
+  await handleFetch([sourcePath, '--cache-dir', cacheDir]);
   process.chdir(cwd);
 
   const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');

@@ -56,7 +56,7 @@ test('runCli runs fetch command end-to-end', async () => {
   const logMock = mock.method(console, 'log', () => {});
 
   process.chdir(tempDir);
-  await runCli(['fetch', '--cache-dir', cacheDir]);
+  await runCli(['fetch', 'source.yaml', '--cache-dir', cacheDir]);
   process.chdir(cwd);
 
   const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');

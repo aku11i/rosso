@@ -25,7 +25,11 @@ export async function handleFetch(argv: string[]) {
     return;
   }
 
-  const sourcePath = positionals[0] ?? 'source.yaml';
+  if (positionals.length === 0) {
+    throw new Error('Missing required source path');
+  }
+
+  const sourcePath = positionals[0];
   const cacheRoot = values['cache-dir'] ?? getDefaultCacheRoot();
   const result = await fetchSource({ cacheRoot, sourcePath });
 
