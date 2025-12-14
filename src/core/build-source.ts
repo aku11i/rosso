@@ -1,5 +1,6 @@
 import { Feed } from 'feed';
 import type { CachedFeed } from '../schema.ts';
+import { isValidDate } from '../utils/is-valid-date.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
 import { readFeedCache } from './read-feed-cache.ts';
@@ -44,7 +45,7 @@ export async function buildSource(options: BuildSourceOptions): Promise<string> 
       seen.add(key);
 
       const date = new Date(item.timestamp);
-      if (Number.isNaN(date.valueOf())) {
+      if (!isValidDate(date)) {
         throw new Error(
           `Invalid timestamp in cache for ${cachedFeed.url}: ${item.timestamp} (${options.sourcePath})`,
         );
