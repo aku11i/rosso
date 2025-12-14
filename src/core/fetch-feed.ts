@@ -14,16 +14,13 @@ export async function fetchFeed(
   const xmlContent = await response.text();
   const feed = parseFeed(xmlContent);
 
-  const seenLinks = new Set<string>();
   const items: CachedItem[] = [];
 
   for (const item of feed.items) {
     const link = item.url ? item.url.trim() : '';
-    if (!link || seenLinks.has(link)) {
+    if (!link || items.some((existing) => existing.link === link)) {
       continue;
     }
-
-    seenLinks.add(link);
 
     const timestampSource = item.published ?? item.updated;
     const timestamp =
