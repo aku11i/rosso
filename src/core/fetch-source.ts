@@ -11,8 +11,6 @@ export type FetchSourceOptions = {
 };
 
 export type FetchSourceResult = {
-  cacheRoot: string;
-  cachePaths: string[];
   feeds: CachedFeed[];
   fetchedAt: string;
 };
@@ -29,11 +27,8 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
   }
 
   const feeds: CachedFeed[] = [];
-  const cachePaths: string[] = [];
-
   for (const feedUrl of feedUrls) {
     const cachePath = getFeedCachePath(options.cacheRoot, feedUrl);
-    cachePaths.push(cachePath);
 
     const previousFeed = await readFeedCache(cachePath);
     const fetchedFeed = await fetchFeed(feedUrl, fetchTimestamp);
@@ -76,8 +71,6 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
   }
 
   return {
-    cacheRoot: options.cacheRoot,
-    cachePaths,
     feeds,
     fetchedAt: fetchTimestamp,
   };

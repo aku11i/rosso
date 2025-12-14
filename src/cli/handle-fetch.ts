@@ -33,7 +33,5 @@ export async function handleFetch(argv: string[]) {
     totalItems += feed.items.length;
   }
 
-  console.log(
-    `Fetched ${result.feeds.length} feeds (${totalItems} items) into ${result.cacheRoot}`,
-  );
+  console.log(`Fetched ${result.feeds.length} feeds (${totalItems} items)`);
 }

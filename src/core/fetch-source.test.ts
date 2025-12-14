@@ -64,7 +64,6 @@ test('fetchSource dedupes feeds and merges cache', async () => {
   const result = await fetchSource({ cacheRoot, sourcePath });
 
   assert.equal(fetchMock.mock.callCount(), 1);
-  assert.equal(result.cachePaths[0], cachePath);
   assert.equal(result.feeds.length, 1);
   const items = result.feeds[0].items;
   assert.equal(items.length, 1);
