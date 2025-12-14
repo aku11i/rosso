@@ -6,6 +6,13 @@
 ## Project Structure & Module Organization
 - Current tree: `README.md`, `LICENSE`. Add application code under `src/`, unit tests under `tests/`, helper scripts under `scripts/`, and docs under `docs/`. Use `assets/` for static files and `examples/fixtures/` for sample data.
 - Keep modules small; one responsibility per file. Choose a single entry point such as `src/main.*` or `src/lib.*` and mirror that layout inside `tests/`.
+- Rosso initial layout:
+  - `src/main.ts`: entry point.
+  - `src/index.ts`: exports the `src/core` public API.
+  - `src/cli`: CLI interface (help, command handlers, etc.).
+  - `src/core`: core logic used by CLI handlers (fetch/build, etc.).
+  - `src/utils`: generic utility functions.
+  - Subdirectories under `src/cli` and `src/core` are allowed (e.g. `src/cli/handlers`).
 
 ## Build, Test, and Development Commands
 - Standardize on a root `Makefile` or `justfile` once tooling exists. Recommended targets:
@@ -19,6 +26,23 @@
 - Enforce automatic formatting (e.g., `prettier`, `ruff`/`black`, `gofmt`, or `rustfmt` depending on the chosen stack) and commit the config at the repo root.
 - Indentation: 2 spaces for JS/TS/web assets, 4 for Python, tabs for Go. Keep line length ≤100 characters.
 - Filenames: `kebab-case` for scripts, `snake_case` for Python modules and test files, `CamelCase` only for type/class definitions. Keep directories lowercase and hyphenated.
+- TypeScript source filenames: `param-case.ts`.
+- One file should contain at most one function or one class.
+- Prefer DRY reusable code.
+
+## CLI & Config (Agreed)
+- Each aggregated feed is defined by a `source.yaml` file (default: `./source.yaml`).
+- `source.yaml` required fields: `name`, `description`, `link`, `feeds`.
+- `feeds` entries: `{ type: rss, url: string }` (dedupe duplicate entries via a Set).
+- Commands:
+  - `rosso fetch [source] [--cache-dir <dir>]`: fetch sources and update cache.
+  - `rosso build [source] [--cache-dir <dir>]`: build the aggregated RSS feed from cache (offline; no network access).
+- Cache:
+  - Default location: OS standard user cache directory.
+  - Override via `--cache-dir`.
+  - `fetch` stores JSON (not raw XML): `item.title`, `item.description`, `item.link`, and an item timestamp (publication datetime; fallback to fetch timestamp when missing). Items without `item.link` are excluded.
+- Item deduplication: only within the same source feed using `feed url + item link`; do not deduplicate across different sources.
+- Parsers: YAML `yaml`; RSS `@rowanmanning/feed-parser`.
 
 ## Testing Guidelines
 - Mirror source structure inside `tests/`; name files `<module>_test.<ext>` or `<module>.spec.<ext>`.
