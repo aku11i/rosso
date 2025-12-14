@@ -1,8 +1,19 @@
 # rosso
 
-Minimal pnpm-managed project skeleton.
+Node.js CLI for fetching RSS feeds defined in a `source.yaml` file and caching the results.
 
 ## Getting started
 - Install dependencies: `pnpm install`
-- Run the sample entry point: `pnpm start` (ESM via `node --experimental-strip-types src/main.ts`)
+- See commands: `pnpm start -- --help`
+- Fetch sources: `pnpm start -- fetch [source.yaml] [--cache-dir <dir>]`
 - Requires Node.js 22 or newer
+
+## Source file
+- Default location: `./source.yaml`
+- Required keys: `name`, `description`, `link`, `feeds`
+- Each feed entry: `{ type: rss, url: string }`; duplicates are removed per URL
+
+## Cache
+- Default location: OS user cache dir (e.g., `$XDG_CACHE_HOME/rosso` on Linux)
+- Override with `--cache-dir`
+- Stored JSON per source: `item.title`, `item.description`, `item.link`, `item.timestamp`

@@ -1,7 +1,7 @@
 {
   "name": "rosso",
   "version": "0.1.0",
-  "description": "Initial pnpm-managed project skeleton.",
+  "description": "CLI for fetching and caching RSS feeds defined in source.yaml files.",
   "private": true,
   "license": "MIT",
   "main": "src/main.ts",
@@ -12,5 +12,10 @@
   "engines": {
     "node": ">=22.0.0"
   },
-  "packageManager": "pnpm@10.8.1"
+  "packageManager": "pnpm@10.8.1",
+  "dependencies": {
+    "@rowanmanning/feed-parser": "^2.1.1",
+    "env-paths": "^3.0.0",
+    "yaml": "^2.8.2"
+  }
 }
