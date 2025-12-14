@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { buildSource } from './build-source.ts';
-import { getFeedCachePath } from './get-feed-cache-path.ts';
+import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import { writeFeedCache } from './write-feed-cache.ts';
+import { hashSourcePath } from '../utils/hash-source-path.ts';
 
 async function setupSource(directory: string, filename = 'source.yaml') {
   const sourcePath = path.join(directory, filename);
@@ -29,8 +30,13 @@ test('buildSource returns RSS XML from cache', async () => {
   const cacheRoot = path.join(tempDir, 'cache');
   const sourcePath = await setupSource(tempDir);
 
-  const cachePath = getFeedCachePath(cacheRoot, 'https://example.com/feed.xml');
-  await writeFeedCache(cachePath, {
+  const sourceHash = await hashSourcePath(sourcePath);
+  const processedCachePath = getSourceFeedCachePath(
+    cacheRoot,
+    sourceHash,
+    'https://example.com/feed.xml',
+  );
+  await writeFeedCache(processedCachePath, {
     title: 'Feed',
     description: null,
     url: 'https://example.com/feed.xml',
@@ -59,6 +65,12 @@ test('buildSource returns RSS XML from cache', async () => {
   assert.ok(indexB >= 0);
   assert.ok(indexA >= 0);
   assert.ok(indexB < indexA);
+
+  const processedContent = JSON.parse(await readFile(processedCachePath, 'utf8')) as Record<
+    string,
+    unknown
+  >;
+  assert.ok(Array.isArray(processedContent.items));
 });
 
 test('buildSource throws when cache is missing', async () => {

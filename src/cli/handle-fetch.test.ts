@@ -5,6 +5,8 @@ import path from 'node:path';
 import os from 'node:os';
 import { handleFetch } from './handle-fetch.ts';
 import { getFeedCachePath } from '../core/get-feed-cache-path.ts';
+import { getSourceFeedCachePath } from '../core/get-source-feed-cache-path.ts';
+import { hashSourcePath } from '../utils/hash-source-path.ts';
 
 const sampleRss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -62,10 +64,19 @@ test('handleFetch fetches default source and writes cache', async () => {
 
   const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
   const cacheContent = JSON.parse(await readFile(cachePath, 'utf8'));
+  const sourceHash = await hashSourcePath(sourcePath);
+  const processedCachePath = getSourceFeedCachePath(
+    cacheDir,
+    sourceHash,
+    'https://example.com/feed.xml',
+  );
+  const processedContent = JSON.parse(await readFile(processedCachePath, 'utf8'));
 
   assert.equal(fetchMock.mock.callCount(), 1);
   assert.equal(cacheContent.items.length, 1);
   assert.equal(cacheContent.title, 'Feed');
+  assert.equal(processedContent.items.length, 1);
+  assert.equal(processedContent.items[0].link, 'https://example.com/a');
   assert.ok(logMock.mock.calls[0]?.arguments[0].includes('Fetched 1 feeds (1 items)'));
 
   fetchMock.mock.restore();
@@ -92,9 +103,17 @@ test('handleFetch uses custom source path', async () => {
 
   const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
   const cacheContent = JSON.parse(await readFile(cachePath, 'utf8'));
+  const sourceHash = await hashSourcePath(path.join(tempDir, 'custom.yaml'));
+  const processedCachePath = getSourceFeedCachePath(
+    cacheDir,
+    sourceHash,
+    'https://example.com/feed.xml',
+  );
+  const processedContent = JSON.parse(await readFile(processedCachePath, 'utf8'));
 
   assert.equal(fetchMock.mock.callCount(), 1);
   assert.equal(cacheContent.items[0].link, 'https://example.com/a');
+  assert.equal(processedContent.items[0].link, 'https://example.com/a');
   assert.ok(logMock.mock.calls[0]?.arguments[0].includes('Fetched 1 feeds (1 items)'));
 
   fetchMock.mock.restore();

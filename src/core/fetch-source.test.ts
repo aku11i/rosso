@@ -5,7 +5,9 @@ import path from 'node:path';
 import os from 'node:os';
 import { fetchSource } from './fetch-source.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
+import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import type { CachedFeed } from '../schema.ts';
+import { hashSourcePath } from '../utils/hash-source-path.ts';
 
 const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -74,6 +76,15 @@ test('fetchSource dedupes feeds and merges cache', async () => {
   const diskCache = JSON.parse(await readFile(cachePath, 'utf8')) as CachedFeed;
   assert.equal(diskCache.title, 'Feed');
   assert.equal(diskCache.items[0].title, 'Fresh');
+
+  const sourceHash = await hashSourcePath(sourcePath);
+  const processedCachePath = getSourceFeedCachePath(
+    cacheRoot,
+    sourceHash,
+    'https://example.com/feed.xml',
+  );
+  const processedCache = JSON.parse(await readFile(processedCachePath, 'utf8')) as CachedFeed;
+  assert.equal(processedCache.items[0].title, 'Fresh');
 
   fetchMock.mock.restore();
 });
