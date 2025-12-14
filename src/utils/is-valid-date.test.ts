@@ -9,4 +9,3 @@ test('isValidDate returns true for valid dates', () => {
 test('isValidDate returns false for invalid dates', () => {
   assert.equal(isValidDate(new Date('not-a-date')), false);
 });
-

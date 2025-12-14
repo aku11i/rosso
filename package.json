@@ -24,13 +24,16 @@
     "dev": "node --experimental-strip-types src/bin.ts",
     "build": "tsdown src/index.ts src/bin.ts --dts --clean",
     "test": "node --experimental-strip-types --test",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "biome check .",
+    "fix": "biome check --write --unsafe ."
   },
   "engines": {
     "node": ">=22.0.0"
   },
   "packageManager": "pnpm@10.8.1",
   "devDependencies": {
+    "@biomejs/biome": "^2.3.8",
     "@types/node": "^22.0.0",
     "tsdown": "^0.17.4",
     "typescript": "^5.8.0"

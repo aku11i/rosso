@@ -23,9 +23,7 @@ export function aggregateFeedItems(cachedFeeds: CachedFeed[]) {
 
       const date = new Date(item.timestamp);
       if (!isValidDate(date)) {
-        throw new Error(
-          `Invalid timestamp in cache for ${cachedFeed.url}: ${item.timestamp}`,
-        );
+        throw new Error(`Invalid timestamp in cache for ${cachedFeed.url}: ${item.timestamp}`);
       }
 
       items.push({

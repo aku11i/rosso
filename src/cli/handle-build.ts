@@ -48,4 +48,3 @@ export async function handleBuild(argv: string[]) {
 
   console.log(rssXml);
 }
-
