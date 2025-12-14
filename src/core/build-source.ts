@@ -1,7 +1,7 @@
 import { Feed } from 'feed';
 import type { CachedFeed } from '../schema.ts';
-import { isValidDate } from '../utils/is-valid-date.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
+import { collectAggregatedItems } from './collect-aggregated-items.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
 import { readFeedCache } from './read-feed-cache.ts';
 
@@ -32,36 +32,7 @@ export async function buildSource(options: BuildSourceOptions): Promise<string> 
     cachedFeeds.push(cached);
   }
 
-  const seen = new Set<string>();
-  const items: { id: string; title: string; link: string; description?: string; date: Date }[] =
-    [];
-
-  for (const cachedFeed of cachedFeeds) {
-    for (const item of cachedFeed.items) {
-      const key = `${cachedFeed.url}\n${item.link}`;
-      if (seen.has(key)) {
-        continue;
-      }
-      seen.add(key);
-
-      const date = new Date(item.timestamp);
-      if (!isValidDate(date)) {
-        throw new Error(
-          `Invalid timestamp in cache for ${cachedFeed.url}: ${item.timestamp} (${options.sourcePath})`,
-        );
-      }
-
-      items.push({
-        id: `${cachedFeed.url}\n${item.link}`,
-        title: item.title ?? item.link,
-        link: item.link,
-        description: item.description ?? undefined,
-        date,
-      });
-    }
-  }
-
-  items.sort((a, b) => b.date.valueOf() - a.date.valueOf() || a.id.localeCompare(b.id));
+  const items = collectAggregatedItems(cachedFeeds, options.sourcePath);
 
   const updated = items[0]?.date ?? new Date();
 
