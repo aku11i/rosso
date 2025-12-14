@@ -17,6 +17,7 @@
   "dependencies": {
     "@rowanmanning/feed-parser": "^2.1.1",
     "env-paths": "^3.0.0",
+    "feed": "^5.1.0",
     "yaml": "^2.8.2",
     "zod": "^4.1.13"
   }
