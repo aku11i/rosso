@@ -1,9 +1,23 @@
 {
   "name": "@aku11i/rosso",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Build an RSS feed from various sources",
-  "private": true,
   "license": "MIT",
+  "author": "aku11i",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aku11i/rosso.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aku11i/rosso/issues"
+  },
+  "homepage": "https://github.com/aku11i/rosso#readme",
+  "keywords": [
+    "rss",
+    "feed",
+    "aggregator",
+    "cli"
+  ],
   "main": "dist/index.mjs",
   "types": "dist/index.d.mts",
   "type": "module",
@@ -17,8 +31,13 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "node dist/bin.mjs",
     "dev": "node --experimental-strip-types src/bin.ts",
@@ -26,7 +45,9 @@
     "test": "node --experimental-strip-types --test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "biome check .",
-    "fix": "biome check --write --unsafe ."
+    "fix": "biome check --write --unsafe .",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run typecheck && npm test"
   },
   "engines": {
     "node": ">=22.0.0"
