@@ -25,7 +25,7 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
   const definition = await loadSourceDefinition(options.sourcePath);
   const fetchTimestamp = new Date().toISOString();
   const sourceHash = await hashSourcePath(options.sourcePath);
-  const filterPrompt = definition.filter?.prompt?.trim();
+  const filterPrompt = definition.filter?.prompt?.trim() ?? null;
 
   const feedUrls = new Set<string>();
   for (const feed of definition.feeds) {
