@@ -37,7 +37,7 @@ test('readRawFeedCache returns null for invalid cache content', async () => {
   assert.equal(result, null);
 });
 
-test('readRawFeedCache rejects source-only fields', async () => {
+test('readRawFeedCache ignores source-only fields', async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), 'rosso-cache-read-raw-'));
   const cachePath = path.join(dir, 'feed.json');
   await writeFile(
@@ -53,5 +53,10 @@ test('readRawFeedCache rejects source-only fields', async () => {
   );
 
   const result = await readRawFeedCache(cachePath);
-  assert.equal(result, null);
+  assert.deepEqual(result, {
+    title: 'Title',
+    description: 'Desc',
+    url: 'https://example.com/feed.xml',
+    items: [],
+  });
 });

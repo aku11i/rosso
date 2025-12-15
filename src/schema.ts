@@ -12,24 +12,20 @@ export const cachedItemSchema = z.object({
   timestamp: z.string(),
 });
 
-export const rawCachedFeedSchema = z
-  .object({
-    title: z.string().nullable(),
-    description: z.string().nullable(),
-    url: z.string(),
-    items: z.array(cachedItemSchema),
-  })
-  .strict();
+export const rawCachedFeedSchema = z.object({
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  url: z.string(),
+  items: z.array(cachedItemSchema),
+});
 
-export const sourceCachedFeedSchema = z
-  .object({
-    title: z.string().nullable(),
-    description: z.string().nullable(),
-    url: z.string(),
-    items: z.array(cachedItemSchema),
-    omittedLinks: z.array(z.string().trim().min(1)).optional(),
-  })
-  .strict();
+export const sourceCachedFeedSchema = z.object({
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  url: z.string(),
+  items: z.array(cachedItemSchema),
+  omittedLinks: z.array(z.string().trim().min(1)).optional(),
+});
 
 export const sourceSchema = z.object({
   name: z.string().trim().min(1, 'name is required'),
