@@ -10,7 +10,7 @@ const usageText =
   '  --cache-dir <dir>  Override the cache directory\n' +
   '  --model-provider <provider>  LLM provider (openai, github)\n' +
   '  --model <name>  Model name (e.g., gpt-5-mini)\n' +
-  '  --model-provider-api-key <key>  Provider API key (optional if env var is set)\n' +
+  '  --model-provider-api-key <key>  Provider API key (or env: OPENAI_API_KEY, GITHUB_TOKEN)\n' +
   '  --model-provider-base-url <url>  Provider base URL (optional)\n' +
   '  -h, --help         Show this message\n';
 
