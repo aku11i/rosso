@@ -80,6 +80,11 @@ rosso fetch source.yaml --model-provider openai --model gpt-5-mini
 
 Providers: `openai`, `github`.
 
+API keys:
+
+- `openai`: set `OPENAI_API_KEY` or pass `--model-provider-api-key`
+- `github`: set `GITHUB_TOKEN`, login via `gh auth token`, or pass `--model-provider-api-key`
+
 ## Cache
 
 - Default location: your OS user cache directory
