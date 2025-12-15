@@ -25,12 +25,12 @@ mock.module('node:child_process', {
   },
 });
 
-let resolveGithubApiKey: typeof import('./resolve-github-api-key.ts').resolveGithubApiKey;
+let getGithubToken: typeof import('./get-github-token.ts').getGithubToken;
 
 const originalGithubToken = process.env.GITHUB_TOKEN;
 
 test.before(async () => {
-  ({ resolveGithubApiKey } = await import('./resolve-github-api-key.ts'));
+  ({ getGithubToken } = await import('./get-github-token.ts'));
 });
 
 test.beforeEach(() => {
@@ -48,28 +48,18 @@ test.after(() => {
   process.env.GITHUB_TOKEN = originalGithubToken;
 });
 
-test('resolveGithubApiKey prefers explicit API key', async () => {
-  execFileHandler = () => {
-    throw new Error('execFile should not be called');
-  };
-
-  const token = await resolveGithubApiKey('  explicit-token  ');
-  assert.equal(token, 'explicit-token');
-  assert.equal(execFileCalls, 0);
-});
-
-test('resolveGithubApiKey falls back to GITHUB_TOKEN', async () => {
+test('getGithubToken returns GITHUB_TOKEN when set', async () => {
   execFileHandler = () => {
     throw new Error('execFile should not be called');
   };
   process.env.GITHUB_TOKEN = 'env-token';
 
-  const token = await resolveGithubApiKey();
+  const token = await getGithubToken();
   assert.equal(token, 'env-token');
   assert.equal(execFileCalls, 0);
 });
 
-test('resolveGithubApiKey falls back to `gh auth token`', async () => {
+test('getGithubToken falls back to `gh auth token`', async () => {
   delete process.env.GITHUB_TOKEN;
   execFileHandler = (file, args, options, callback) => {
     assert.equal(file, 'gh');
@@ -78,18 +68,18 @@ test('resolveGithubApiKey falls back to `gh auth token`', async () => {
     callback(null, 'gh-token\n');
   };
 
-  const token = await resolveGithubApiKey();
+  const token = await getGithubToken();
   assert.equal(token, 'gh-token');
   assert.equal(execFileCalls, 1);
 });
 
-test('resolveGithubApiKey returns undefined when `gh auth token` fails', async () => {
+test('getGithubToken returns undefined when `gh auth token` fails', async () => {
   delete process.env.GITHUB_TOKEN;
   execFileHandler = (_file, _args, _options, callback) => {
     callback(new Error('fail'), '');
   };
 
-  const token = await resolveGithubApiKey();
+  const token = await getGithubToken();
   assert.equal(token, undefined);
   assert.equal(execFileCalls, 1);
 });

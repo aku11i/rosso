@@ -1,11 +1,6 @@
 import { execFile } from 'node:child_process';
 
-export async function resolveGithubApiKey(explicitApiKey?: string): Promise<string | undefined> {
-  const direct = explicitApiKey?.trim();
-  if (direct) {
-    return direct;
-  }
-
+export async function getGithubToken(): Promise<string | undefined> {
   const envToken = process.env.GITHUB_TOKEN?.trim();
   if (envToken) {
     return envToken;
@@ -21,6 +16,7 @@ export async function resolveGithubApiKey(explicitApiKey?: string): Promise<stri
         resolve(String(stdout));
       });
     });
+
     const token = stdout.trim();
     return token ? token : undefined;
   } catch {

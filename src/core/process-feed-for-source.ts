@@ -2,7 +2,7 @@ import type { CachedFeed } from '../schema.ts';
 import { modelProviderSchema, type ModelConfig } from './model-config.ts';
 import { createOpenAI } from '@ai-sdk/openai';
 import { filterFeedItemsWithLlm } from './filter-feed-items-with-llm.ts';
-import { resolveGithubApiKey } from './resolve-github-api-key.ts';
+import { getGithubToken } from '../utils/get-github-token.ts';
 
 export type ProcessFeedForSourceOptions = {
   sourcePath: string;
@@ -31,7 +31,7 @@ export async function processFeedForSource(
 
   const apiKey =
     options.model.provider === 'github'
-      ? await resolveGithubApiKey(options.model.apiKey)
+      ? options.model.apiKey?.trim() || (await getGithubToken())
       : options.model.apiKey;
 
   if (options.model.provider === 'github' && !apiKey) {
