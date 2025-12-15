@@ -3,6 +3,8 @@ import type { LanguageModel } from 'ai';
 import { z } from 'zod';
 import type { CachedItem } from '../schema.ts';
 
+const ITEMS_PER_LLM_CALL = 10;
+
 const outputSchema = z.object({
   links: z.array(z.string().trim().min(1)),
 });
@@ -23,8 +25,8 @@ export async function filterFeedItemsWithLlm(
 
   const selectedLinks = new Set<string>();
 
-  for (let start = 0; start < options.items.length; start += 10) {
-    const chunk = options.items.slice(start, start + 10);
+  for (let start = 0; start < options.items.length; start += ITEMS_PER_LLM_CALL) {
+    const chunk = options.items.slice(start, start + ITEMS_PER_LLM_CALL);
     const allowedLinks = new Set(chunk.map((item) => item.link));
 
     const system = [
