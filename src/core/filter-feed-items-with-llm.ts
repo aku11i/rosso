@@ -12,7 +12,6 @@ export type FilterFeedItemsWithLlmOptions = {
   filter: string;
   feedUrl: string;
   items: CachedItem[];
-  generateObjectFn?: typeof generateObject;
 };
 
 export async function filterFeedItemsWithLlm(
@@ -22,7 +21,6 @@ export async function filterFeedItemsWithLlm(
     return [];
   }
 
-  const generateObjectFn = options.generateObjectFn ?? generateObject;
   const selectedLinks = new Set<string>();
 
   for (let start = 0; start < options.items.length; start += 10) {
@@ -60,7 +58,7 @@ export async function filterFeedItemsWithLlm(
       'Return the result.',
     ].join('\n');
 
-    const result = await generateObjectFn({
+    const result = await generateObject({
       model: options.model,
       schema: outputSchema,
       schemaName: 'SelectedFeedItemLinks',

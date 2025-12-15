@@ -42,7 +42,7 @@
     "start": "node dist/bin.mjs",
     "dev": "node --experimental-strip-types src/bin.ts",
     "build": "tsdown src/index.ts src/bin.ts --dts --clean",
-    "test": "node --experimental-strip-types --test",
+    "test": "node --experimental-strip-types --experimental-test-module-mocks --test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "biome check .",
     "fix": "biome check --write --unsafe .",

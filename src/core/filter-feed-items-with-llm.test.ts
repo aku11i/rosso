@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
-import { filterFeedItemsWithLlm } from './filter-feed-items-with-llm.ts';
+import test, { mock } from 'node:test';
 import type { CachedItem } from '../schema.ts';
 
 function createItems(count: number): CachedItem[] {
@@ -16,16 +15,29 @@ function createItems(count: number): CachedItem[] {
   return items;
 }
 
+let generateObjectHandler = async (..._args: unknown[]) => ({ object: { links: [] } });
+
+mock.module('ai', {
+  namedExports: {
+    generateObject: async (...args: unknown[]) => generateObjectHandler(...args),
+  },
+});
+
+let filterFeedItemsWithLlm: typeof import('./filter-feed-items-with-llm.ts').filterFeedItemsWithLlm;
+
+test.before(async () => {
+  ({ filterFeedItemsWithLlm } = await import('./filter-feed-items-with-llm.ts'));
+});
+
 test('filterFeedItemsWithLlm splits items into chunks of 10', async () => {
   const items = createItems(25);
   let callCount = 0;
 
-  const generateObjectFn = async () => {
+  generateObjectHandler = async () => {
     callCount++;
     const selected = items[(callCount - 1) * 10]?.link;
     assert.ok(selected, 'expected selected link');
-
-    return { object: { links: [selected, 'https://not-in-chunk.example.com'] } };
+    return { object: { links: [selected, 'https://not-in-chunk.example.com'] } } as never;
   };
 
   const result = await filterFeedItemsWithLlm({
@@ -33,7 +45,6 @@ test('filterFeedItemsWithLlm splits items into chunks of 10', async () => {
     filter: 'Keep everything',
     feedUrl: 'https://example.com/feed.xml',
     items,
-    generateObjectFn: generateObjectFn as never,
   });
 
   assert.equal(callCount, 3);
@@ -45,9 +56,10 @@ test('filterFeedItemsWithLlm splits items into chunks of 10', async () => {
 
 test('filterFeedItemsWithLlm returns empty array for empty input', async () => {
   let called = false;
-  const generateObjectFn = async () => {
+
+  generateObjectHandler = async () => {
     called = true;
-    return { object: { links: [] } };
+    return { object: { links: [] } } as never;
   };
 
   const result = await filterFeedItemsWithLlm({
@@ -55,7 +67,6 @@ test('filterFeedItemsWithLlm returns empty array for empty input', async () => {
     filter: 'Keep everything',
     feedUrl: 'https://example.com/feed.xml',
     items: [],
-    generateObjectFn: generateObjectFn as never,
   });
 
   assert.equal(called, false);

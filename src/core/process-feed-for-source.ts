@@ -2,7 +2,6 @@ import type { CachedFeed } from '../schema.ts';
 import type { ModelConfig } from './model-config.ts';
 import { createOpenAI } from '@ai-sdk/openai';
 import { filterFeedItemsWithLlm } from './filter-feed-items-with-llm.ts';
-import type { FilterFeedItemsWithLlmOptions } from './filter-feed-items-with-llm.ts';
 
 export type ProcessFeedForSourceOptions = {
   sourcePath: string;
@@ -10,7 +9,6 @@ export type ProcessFeedForSourceOptions = {
   feed: CachedFeed;
   filter?: string;
   model?: ModelConfig;
-  generateObjectFn?: FilterFeedItemsWithLlmOptions['generateObjectFn'];
 };
 
 export async function processFeedForSource(
@@ -42,7 +40,6 @@ export async function processFeedForSource(
     filter: options.filter,
     feedUrl: options.feedUrl,
     items: options.feed.items,
-    generateObjectFn: options.generateObjectFn,
   });
 
   return {
