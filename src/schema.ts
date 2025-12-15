@@ -23,6 +23,7 @@ export const sourceSchema = z.object({
   name: z.string().trim().min(1, 'name is required'),
   description: z.string().trim().min(1, 'description is required'),
   link: z.string().trim().min(1, 'link is required'),
+  filter: z.string().trim().min(1, 'filter is required').optional(),
   feeds: z.array(feedEntrySchema).min(1, 'feeds must include at least one entry'),
 });
 

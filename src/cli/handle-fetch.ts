@@ -7,6 +7,10 @@ const usageText =
   '\n' +
   'Options:\n' +
   '  --cache-dir <dir>  Override the cache directory\n' +
+  '  --model-provider <provider>  LLM provider (currently: openai)\n' +
+  '  --model <name>  Model name (e.g., gpt-5-mini)\n' +
+  '  --model-provider-api-key <key>  Provider API key (optional if env var is set)\n' +
+  '  --model-provider-base-url <url>  Provider base URL (optional)\n' +
   '  -h, --help         Show this message\n';
 
 export async function handleFetch(argv: string[]) {
@@ -16,6 +20,10 @@ export async function handleFetch(argv: string[]) {
     allowPositionals: true,
     options: {
       'cache-dir': { type: 'string' },
+      'model-provider': { type: 'string' },
+      model: { type: 'string' },
+      'model-provider-api-key': { type: 'string' },
+      'model-provider-base-url': { type: 'string' },
       help: { type: 'boolean', short: 'h' },
     },
   });
@@ -31,7 +39,27 @@ export async function handleFetch(argv: string[]) {
 
   const sourcePath = positionals[0];
   const cacheRoot = values['cache-dir'] ?? getDefaultCacheRoot();
-  const result = await fetchSource({ cacheRoot, sourcePath });
+  const modelProvider =
+    values['model-provider'] ??
+    (values.model || values['model-provider-api-key'] || values['model-provider-base-url']
+      ? 'openai'
+      : undefined);
+
+  if (modelProvider && modelProvider !== 'openai') {
+    throw new Error(`Unsupported --model-provider "${modelProvider}" (supported: openai)`);
+  }
+
+  const model =
+    modelProvider && values.model
+      ? {
+          provider: 'openai' as const,
+          model: values.model,
+          apiKey: values['model-provider-api-key'],
+          baseURL: values['model-provider-base-url'],
+        }
+      : undefined;
+
+  const result = await fetchSource({ cacheRoot, sourcePath, model });
 
   let totalItems = 0;
   for (const feed of result.feeds) {

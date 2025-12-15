@@ -14,7 +14,16 @@ Node.js CLI for fetching RSS feeds defined in a `source.yaml` file and caching t
 ## Source file
 - Must be provided explicitly to the fetch command
 - Required keys: `name`, `description`, `link`, `feeds`
+- Optional keys: `filter` (LLM-based item filtering; see below)
 - Each feed entry: `{ type: rss, url: string }`; duplicates are removed per URL
+
+## LLM filtering (optional)
+If `filter` is present in your `source.yaml`, `rosso fetch` filters each feed's cached items using an LLM.
+
+- LLM calls use Vercel AI SDK `generateObject` with a structured output schema.
+- Feed items are processed in chunks of 10 per LLM call.
+- Required CLI flags: `--model-provider openai --model <name>`
+- Optional: `--model-provider-api-key <key>` and `--model-provider-base-url <url>`
 
 ## Cache
 - Default location: OS user cache dir (e.g., `$XDG_CACHE_HOME/rosso` on Linux)

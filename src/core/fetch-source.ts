@@ -8,10 +8,12 @@ import { readFeedCache } from './read-feed-cache.ts';
 import { processFeedForSource } from './process-feed-for-source.ts';
 import { writeFeedCache } from './write-feed-cache.ts';
 import { hashSourcePath } from '../utils/hash-source-path.ts';
+import type { ModelConfig } from './model-config.ts';
 
 export type FetchSourceOptions = {
   cacheRoot: string;
   sourcePath: string;
+  model?: ModelConfig;
 };
 
 export type FetchSourceResult = {
@@ -43,10 +45,12 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
     await writeFeedCache(cachePath, mergedFeed);
 
     const processedCachePath = getSourceFeedCachePath(options.cacheRoot, sourceHash, feedUrl);
-    const processedFeed = processFeedForSource({
+    const processedFeed = await processFeedForSource({
       sourcePath: options.sourcePath,
       feedUrl,
       feed: mergedFeed,
+      filter: definition.filter,
+      model: options.model,
     });
     await writeFeedCache(processedCachePath, processedFeed);
     feeds.push(processedFeed);
