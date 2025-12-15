@@ -1,4 +1,4 @@
-import type { CachedFeed } from '../schema.ts';
+import type { RawCachedFeed } from '../schema.ts';
 import { isValidDate } from '../utils/is-valid-date.ts';
 
 export type AggregatedItem = {
@@ -9,7 +9,7 @@ export type AggregatedItem = {
   date: Date;
 };
 
-export function aggregateFeedItems(cachedFeeds: CachedFeed[]) {
+export function aggregateFeedItems(cachedFeeds: RawCachedFeed[]) {
   const seen = new Set<string>();
   const items: AggregatedItem[] = [];
 

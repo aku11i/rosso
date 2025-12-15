@@ -1,14 +1,10 @@
-import type { CachedFeed } from '../schema.ts';
-import { fetchFeed } from './fetch-feed.ts';
-import { getFeedCachePath } from './get-feed-cache-path.ts';
-import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
+import type { SourceCachedFeed } from '../schema.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
-import { mergeFeedCache } from './merge-feed-cache.ts';
-import { readFeedCache } from './read-feed-cache.ts';
-import { processFeedForSource } from './process-feed-for-source.ts';
-import { writeFeedCache } from './write-feed-cache.ts';
 import { hashSourcePath } from '../utils/hash-source-path.ts';
 import type { ModelConfig } from './model-config.ts';
+import { getUniqueFeedUrls } from './get-unique-feed-urls.ts';
+import { updateRawFeedCache } from './update-raw-feed-cache.ts';
+import { updateSourceFeedCache } from './update-source-feed-cache.ts';
 
 export type FetchSourceOptions = {
   cacheRoot: string;
@@ -17,47 +13,41 @@ export type FetchSourceOptions = {
 };
 
 export type FetchSourceResult = {
-  feeds: CachedFeed[];
+  feeds: SourceCachedFeed[];
   fetchedAt: string;
 };
 
 export async function fetchSource(options: FetchSourceOptions): Promise<FetchSourceResult> {
   const definition = await loadSourceDefinition(options.sourcePath);
-  const fetchTimestamp = new Date().toISOString();
+  const fetchedAt = new Date().toISOString();
   const sourceHash = await hashSourcePath(options.sourcePath);
+  const filterPrompt = definition.filter?.prompt?.trim() ?? null;
 
-  const feedUrls = new Set<string>();
-  for (const feed of definition.feeds) {
-    if (!feedUrls.has(feed.url)) {
-      feedUrls.add(feed.url);
-    }
-  }
+  const feedUrls = getUniqueFeedUrls(definition.feeds);
 
-  const feeds: CachedFeed[] = [];
+  const feeds: SourceCachedFeed[] = [];
   for (const feedUrl of feedUrls) {
-    const cachePath = getFeedCachePath(options.cacheRoot, feedUrl);
+    const mergedFeed = await updateRawFeedCache({
+      cacheRoot: options.cacheRoot,
+      feedUrl,
+      fetchedAt,
+    });
 
-    const previousFeed = await readFeedCache(cachePath);
-    const fetchedFeed = await fetchFeed(feedUrl, fetchTimestamp);
-
-    const mergedFeed = mergeFeedCache(previousFeed, fetchedFeed);
-
-    await writeFeedCache(cachePath, mergedFeed);
-
-    const processedCachePath = getSourceFeedCachePath(options.cacheRoot, sourceHash, feedUrl);
-    const processedFeed = await processFeedForSource({
+    const processedFeed = await updateSourceFeedCache({
+      cacheRoot: options.cacheRoot,
+      sourceHash,
       sourcePath: options.sourcePath,
       feedUrl,
-      feed: mergedFeed,
-      filter: definition.filter,
+      mergedFeed,
+      filterPrompt,
       model: options.model,
     });
-    await writeFeedCache(processedCachePath, processedFeed);
+
     feeds.push(processedFeed);
   }
 
   return {
     feeds,
-    fetchedAt: fetchTimestamp,
+    fetchedAt,
   };
 }

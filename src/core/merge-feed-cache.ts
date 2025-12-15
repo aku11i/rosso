@@ -1,9 +1,9 @@
-import type { CachedFeed, CachedItem } from '../schema.ts';
+import type { RawCachedFeed, CachedItem } from '../schema.ts';
 
 export function mergeFeedCache(
-  previousFeed: CachedFeed | null,
-  fetchedFeed: CachedFeed,
-): CachedFeed {
+  previousFeed: RawCachedFeed | null,
+  fetchedFeed: RawCachedFeed,
+): RawCachedFeed {
   const combinedItems: CachedItem[] = [];
 
   for (const item of previousFeed?.items ?? []) {

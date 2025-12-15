@@ -5,7 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { buildSource } from './build-source.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
-import { writeFeedCache } from './write-feed-cache.ts';
+import { writeSourceFeedCache } from './write-source-feed-cache.ts';
 import { hashSourcePath } from '../utils/hash-source-path.ts';
 
 async function setupSource(directory: string, filename = 'source.yaml') {
@@ -36,7 +36,7 @@ test('buildSource returns RSS XML from cache', async () => {
     sourceHash,
     'https://example.com/feed.xml',
   );
-  await writeFeedCache(processedCachePath, {
+  await writeSourceFeedCache(processedCachePath, {
     title: 'Feed',
     description: null,
     url: 'https://example.com/feed.xml',
