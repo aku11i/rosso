@@ -40,11 +40,22 @@ export async function handleFetch(argv: string[]) {
 
   const sourcePath = positionals[0];
   const cacheRoot = values['cache-dir'] ?? getDefaultCacheRoot();
-  const modelProvider =
-    values['model-provider'] ??
-    (values.model || values['model-provider-api-key'] || values['model-provider-base-url']
-      ? 'openai'
-      : undefined);
+  const modelProvider = values['model-provider'];
+  const hasAnyModelConfig =
+    Boolean(values.model) ||
+    Boolean(values['model-provider-api-key']) ||
+    Boolean(values['model-provider-base-url']) ||
+    Boolean(modelProvider);
+
+  if (hasAnyModelConfig && !modelProvider) {
+    throw new Error(
+      'Missing --model-provider. Pass --model-provider openai with --model when using LLM options.',
+    );
+  }
+
+  if (modelProvider && !values.model) {
+    throw new Error('Missing --model. Pass --model <name> with --model-provider.');
+  }
 
   if (modelProvider) {
     const parsedProvider = modelProviderSchema.safeParse(modelProvider);
@@ -53,15 +64,14 @@ export async function handleFetch(argv: string[]) {
     }
   }
 
-  const model =
-    modelProvider && values.model
-      ? {
-          provider: 'openai' as const,
-          model: values.model,
-          apiKey: values['model-provider-api-key'],
-          baseURL: values['model-provider-base-url'],
-        }
-      : undefined;
+  const model = modelProvider
+    ? {
+        provider: 'openai' as const,
+        model: values.model as string,
+        apiKey: values['model-provider-api-key'],
+        baseURL: values['model-provider-base-url'],
+      }
+    : undefined;
 
   const result = await fetchSource({ cacheRoot, sourcePath, model });
 
