@@ -26,11 +26,7 @@ export async function processFeedForSource(
     );
   }
 
-  try {
-    modelProviderSchema.parse(options.model.provider);
-  } catch {
-    throw new Error(`Unsupported --model-provider "${options.model.provider}" (supported: openai)`);
-  }
+  modelProviderSchema.parse(options.model.provider);
 
   const provider = createOpenAI({
     apiKey: options.model.apiKey,
