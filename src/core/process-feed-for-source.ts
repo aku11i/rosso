@@ -26,8 +26,9 @@ export async function processFeedForSource(
     );
   }
 
-  const parsedProvider = modelProviderSchema.safeParse(options.model.provider);
-  if (!parsedProvider.success) {
+  try {
+    modelProviderSchema.parse(options.model.provider);
+  } catch {
     throw new Error(`Unsupported --model-provider "${options.model.provider}" (supported: openai)`);
   }
 
