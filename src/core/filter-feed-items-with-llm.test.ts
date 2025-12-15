@@ -41,7 +41,11 @@ test('filterFeedItemsWithLlm splits items into chunks of 10', async () => {
     if (typeof system !== 'string') {
       throw new Error('expected system prompt string');
     }
-    assert.ok(system.includes('<system>'));
+    assert.ok(system.includes('<instructions>'));
+    assert.ok(system.includes('</instructions>'));
+    assert.ok(system.includes('<filterCriteria>'));
+    assert.ok(system.includes('Keep everything'));
+    assert.ok(system.includes('</filterCriteria>'));
     assert.ok(system.includes('<rules>'));
 
     const selected = items[(callCount - 1) * 10]?.link;

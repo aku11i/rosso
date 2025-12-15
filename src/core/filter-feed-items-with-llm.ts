@@ -28,17 +28,21 @@ export async function filterFeedItemsWithLlm(
     const allowedLinks = new Set(chunk.map((item) => item.link));
 
     const system = [
-      '<system>',
-      '  <role>You are an RSS feed item filter.</role>',
-      '  <goal>Select only the items that match the given filter criteria.</goal>',
-      `  <filterCriteria>${options.filter}</filterCriteria>`,
-      '  <rules>',
-      '    <rule>Only select from the provided items.</rule>',
-      '    <rule>Use item link strings exactly as provided.</rule>',
-      '    <rule>Return a JSON object that matches the output schema.</rule>',
-      '    <rule>If no items match, return an empty array of links.</rule>',
-      '  </rules>',
-      '</system>',
+      '<instructions>',
+      'You are an RSS feed item filter.',
+      'Select only the items that match the given filter criteria.',
+      '</instructions>',
+      '',
+      `<filterCriteria>`,
+      options.filter,
+      `</filterCriteria>`,
+      '',
+      '<rules>',
+      '- Only select from the provided items.',
+      '- Use item link strings exactly as provided.',
+      '- Return a JSON object that matches the output schema.',
+      '- If no items match, return an empty array of links.',
+      '</rules>',
     ].join('\n');
 
     const prompt = [
