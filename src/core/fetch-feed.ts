@@ -1,5 +1,8 @@
 import { parseFeed } from '@rowanmanning/feed-parser';
 import type { RawCachedFeed, CachedItem } from '../schema.ts';
+import { sortCachedItemsByTimestampDesc } from './sort-cached-items-by-timestamp.ts';
+
+const MAX_ITEMS_PER_FEED = 20;
 
 export async function fetchFeed(feedUrl: string, fetchTimestamp: string): Promise<RawCachedFeed> {
   const response = await fetch(feedUrl);
@@ -32,10 +35,12 @@ export async function fetchFeed(feedUrl: string, fetchTimestamp: string): Promis
     });
   }
 
+  const limitedItems = sortCachedItemsByTimestampDesc(items).slice(0, MAX_ITEMS_PER_FEED);
+
   return {
     title: feed.title ?? null,
     description: feed.description ?? null,
     url: feedUrl,
-    items,
+    items: limitedItems,
   };
 }
