@@ -33,7 +33,7 @@ export async function updateSourceFeedCache(
     previousProcessed,
   });
 
-  let selectedLinks = new Set<string>();
+  const selectedLinks = new Set<string>();
 
   if (unprocessedItems.length > 0) {
     const processedDelta = await processFeedForSource({
@@ -44,7 +44,9 @@ export async function updateSourceFeedCache(
       model: options.model,
     });
 
-    selectedLinks = new Set(processedDelta.items.map((item) => item.link));
+    for (const item of processedDelta.items) {
+      selectedLinks.add(item.link);
+    }
   }
 
   const processedFeed = buildSourceFeedCacheFromDelta({
