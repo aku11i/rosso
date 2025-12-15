@@ -1,8 +1,7 @@
 import type { CachedFeed } from '../schema.ts';
 import { modelProviderSchema, type ModelConfig } from './model-config.ts';
-import { createOpenAI } from '@ai-sdk/openai';
 import { filterFeedItemsWithLlm } from './filter-feed-items-with-llm.ts';
-import { getGithubToken } from '../utils/get-github-token.ts';
+import { resolveLanguageModelFromConfig } from './resolve-language-model.ts';
 
 export type ProcessFeedForSourceOptions = {
   sourcePath: string;
@@ -28,31 +27,7 @@ export async function processFeedForSource(
   }
 
   modelProviderSchema.parse(options.model.provider);
-
-  const apiKey =
-    options.model.provider === 'github'
-      ? options.model.apiKey?.trim() || (await getGithubToken())
-      : options.model.apiKey;
-
-  if (options.model.provider === 'github' && !apiKey) {
-    throw new Error(
-      'GitHub model provider requires an API key. ' +
-        'Pass --model-provider-api-key, or set GITHUB_TOKEN, or login via `gh auth token`.',
-    );
-  }
-
-  const provider = createOpenAI({
-    apiKey,
-    baseURL:
-      options.model.provider === 'github'
-        ? (options.model.baseURL ?? 'https://models.github.ai/inference')
-        : options.model.baseURL,
-  });
-
-  const model =
-    options.model.provider === 'github'
-      ? provider.chat(options.model.model)
-      : provider(options.model.model);
+  const model = await resolveLanguageModelFromConfig(options.model);
   const items = await filterFeedItemsWithLlm({
     model,
     filter: filterPrompt,
