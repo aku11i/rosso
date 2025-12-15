@@ -21,7 +21,7 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           # Accept semver-like values including prerelease/build segments (e.g. v2.2.1-rc.0)
-          if [[ "$PR_TITLE" =~ ^chore\\(version\\):\\ v([0-9A-Za-z.+-]+)$ ]]; then
+          if [[ "$PR_TITLE" =~ ^chore\(version\):\ v([0-9A-Za-z.+-]+)$ ]]; then
             VERSION="${BASH_REMATCH[1]}"
             echo "version=$VERSION" >> "$GITHUB_OUTPUT"
             echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
