@@ -1,44 +1,107 @@
-# rosso
+# Rosso
 
-Node.js CLI for fetching RSS feeds defined in a `source.yaml` file and caching the results.
+Build an RSS feed from various sources.
 
-## Getting started
-- Install dependencies: `pnpm install`
-- See commands: `pnpm start -- --help`
-- Build `dist/`: `pnpm build`
-- Fetch sources: `pnpm start -- fetch <source.yaml> [--cache-dir <dir>]`
-- Build aggregated RSS: `pnpm start -- build <source.yaml> [--cache-dir <dir>] [--output-file <file>]`
-- Run tests: `pnpm test`
-- Requires Node.js 22 or newer
+Rosso is a small CLI that lets you combine multiple RSS feeds into a single feed for your reader.
 
-## Source file
-- Must be provided explicitly to the fetch command
-- Required keys: `name`, `description`, `link`, `feeds`
-- Optional keys: `filter` (LLM-based item filtering; see below)
-- Each feed entry: `{ type: rss, url: string }`; duplicates are removed per URL
+- `fetch`: downloads RSS feeds defined in `source.yaml` and caches items locally (as JSON)
+- `build`: generates an aggregated RSS feed from the cache (offline; no network access)
 
-## LLM filtering (optional)
-If `filter` is present in your `source.yaml`, `rosso fetch` filters each feed's cached items using an LLM.
+## Install
 
-- LLM calls use Vercel AI SDK `generateObject` with a structured output schema.
-- Feed items are processed in chunks of 10 per LLM call.
-- `filter` format: `filter: { prompt: "<your criteria>" }`
-- Required CLI flags: `--model-provider <provider> --model <name>` (provider: `openai`, `github`)
-- Optional: `--model-provider-api-key <key>` and `--model-provider-base-url <url>`
-- GitHub provider:
-  - Uses OpenAI-compatible `chat/completions`
-  - Default base URL: `https://models.github.ai/inference`
-  - API key priority: `--model-provider-api-key` → `GITHUB_TOKEN` → `gh auth token`
+```bash
+npm install -g @aku11i/rosso
+```
+
+Requires Node.js `>=22`.
+
+## Quick start
+
+Create `source.yaml`:
+
+```yaml
+name: My Feed
+description: A combined feed for my reader
+link: https://example.com/
+feeds:
+  - type: rss
+    url: https://blog.example.com/rss.xml
+  - type: rss
+    url: https://news.example.com/feed.xml
+```
+
+Fetch and cache:
+
+```bash
+rosso fetch source.yaml
+```
+
+Build an RSS file:
+
+```bash
+rosso build source.yaml --output-file ./dist/rosso.xml
+```
+
+If you omit `--output-file`, Rosso prints the RSS XML to stdout.
+
+## `source.yaml` format
+
+Required fields:
+
+- `name`
+- `description`
+- `link`
+- `feeds`
+
+Feed entries:
+
+```yaml
+feeds:
+  - type: rss
+    url: https://example.com/feed.xml
+```
+
+Duplicate feed URLs are removed within the same source.
+
+### Optional filtering (LLM)
+
+Add a filter prompt:
+
+```yaml
+filter:
+  prompt: Keep items about TypeScript and Node.js.
+```
+
+Then pass a model when running `fetch`:
+
+```bash
+rosso fetch source.yaml --model-provider openai --model gpt-5-mini
+```
+
+Providers: `openai`, `github`.
 
 ## Cache
-- Default location: OS user cache dir (e.g., `$XDG_CACHE_HOME/rosso` on Linux)
-- Override with `--cache-dir`
-- Raw feed cache (shared across sources): `<cacheRoot>/feeds/{sha256(feedUrl)}.json`
-- Source-specific cache (per source x feed): `<cacheRoot>/sources/{sha256(realpath(source.yaml))}/feeds/{sha256(feedUrl)}.json`
-- Each cached feed stores `title`, `description`, `url`, `items[]` with `title`, `description`, `link`, `timestamp`
 
-## Releases
-- Run the `Version bump` workflow to open a release PR.
-- Merge the PR to create a `vX.Y.Z` tag automatically.
-- Publish by creating a GitHub Release for that tag (triggers `Publish to npm`).
-- npm publishing is configured for OIDC/trusted publishing (no `NPM_TOKEN` in GitHub secrets).
+- Default location: your OS user cache directory
+- Override: `--cache-dir <dir>`
+- `fetch` updates the cache using the network
+- `build` reads only from the cache (no network)
+
+## CLI
+
+- `rosso fetch <source> [--cache-dir <dir>] [--model-provider ...]`
+- `rosso build <source> [--cache-dir <dir>] [--output-file <file>]`
+
+Run `rosso --help` for full usage.
+
+## License
+
+MIT (see `LICENSE`).
+
+## Development
+
+- Requires Node.js `>=22`
+- Install: `pnpm install`
+- Build: `pnpm build`
+- Test: `pnpm test`
+- Lint: `pnpm lint`
