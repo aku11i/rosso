@@ -42,7 +42,7 @@
     "start": "node dist/bin.mjs",
     "dev": "node --experimental-strip-types src/bin.ts",
     "build": "tsdown src/index.ts src/bin.ts --dts --clean",
-    "test": "node --experimental-strip-types --test",
+    "test": "node --experimental-strip-types --experimental-test-module-mocks --test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "biome check .",
     "fix": "biome check --write --unsafe .",
@@ -60,7 +60,9 @@
     "typescript": "^5.8.0"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.86",
     "@rowanmanning/feed-parser": "^2.1.1",
+    "ai": "^5.0.113",
     "env-paths": "^3.0.0",
     "feed": "^5.1.0",
     "yaml": "^2.8.2",
