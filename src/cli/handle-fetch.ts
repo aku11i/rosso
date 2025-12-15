@@ -1,6 +1,7 @@
 import { parseArgs } from 'node:util';
 import { fetchSource } from '../core/fetch-source.ts';
 import { getDefaultCacheRoot } from '../utils/get-default-cache-root.ts';
+import { modelProviderSchema } from '../core/model-config.ts';
 
 const usageText =
   'Usage: rosso fetch [source] [--cache-dir <dir>]\n' +
@@ -45,8 +46,11 @@ export async function handleFetch(argv: string[]) {
       ? 'openai'
       : undefined);
 
-  if (modelProvider && modelProvider !== 'openai') {
-    throw new Error(`Unsupported --model-provider "${modelProvider}" (supported: openai)`);
+  if (modelProvider) {
+    const parsedProvider = modelProviderSchema.safeParse(modelProvider);
+    if (!parsedProvider.success) {
+      throw new Error(`Unsupported --model-provider "${modelProvider}" (supported: openai)`);
+    }
   }
 
   const model =

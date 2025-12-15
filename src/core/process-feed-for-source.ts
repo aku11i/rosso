@@ -1,5 +1,5 @@
 import type { CachedFeed } from '../schema.ts';
-import type { ModelConfig } from './model-config.ts';
+import { modelProviderSchema, type ModelConfig } from './model-config.ts';
 import { createOpenAI } from '@ai-sdk/openai';
 import { filterFeedItemsWithLlm } from './filter-feed-items-with-llm.ts';
 
@@ -26,7 +26,8 @@ export async function processFeedForSource(
     );
   }
 
-  if (options.model.provider !== 'openai') {
+  const parsedProvider = modelProviderSchema.safeParse(options.model.provider);
+  if (!parsedProvider.success) {
     throw new Error(`Unsupported --model-provider "${options.model.provider}" (supported: openai)`);
   }
 

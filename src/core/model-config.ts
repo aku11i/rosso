@@ -1,4 +1,7 @@
-export type ModelProvider = 'openai';
+import { z } from 'zod';
+
+export const modelProviderSchema = z.literal('openai');
+export type ModelProvider = z.infer<typeof modelProviderSchema>;
 
 export type ModelConfig = {
   provider: ModelProvider;
