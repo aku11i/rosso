@@ -6,9 +6,13 @@ import { loadSourceDefinition } from './load-source-definition.ts';
 import { mergeFeedCache } from './merge-feed-cache.ts';
 import { hashSourcePath } from '../utils/hash-source-path.ts';
 import type { ModelConfig } from './model-config.ts';
+import { processFeedForSource } from './process-feed-for-source.ts';
 import { readRawFeedCache } from './read-raw-feed-cache.ts';
+import { readSourceFeedCache } from './read-source-feed-cache.ts';
 import { writeRawFeedCache } from './write-raw-feed-cache.ts';
-import { updateSourceFeedCache } from './update-source-feed-cache.ts';
+import { writeSourceFeedCache } from './write-source-feed-cache.ts';
+import { getUnprocessedItemsForSource } from './get-unprocessed-items-for-source.ts';
+import { buildSourceFeedCacheFromDelta } from './build-source-feed-cache-from-delta.ts';
 
 export type FetchSourceOptions = {
   cacheRoot: string;
@@ -46,14 +50,42 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
     await writeRawFeedCache(cachePath, mergedFeed);
 
     const processedCachePath = getSourceFeedCachePath(options.cacheRoot, sourceHash, feedUrl);
-    const processedFeed = await updateSourceFeedCache({
-      processedCachePath,
-      sourcePath: options.sourcePath,
-      feedUrl,
+
+    if (!filterPrompt) {
+      await writeSourceFeedCache(processedCachePath, mergedFeed);
+      feeds.push(mergedFeed);
+      continue;
+    }
+
+    const previousProcessed = await readSourceFeedCache(processedCachePath);
+    const { unprocessedItems, keptLinks, omittedLinks } = getUnprocessedItemsForSource({
       mergedFeed,
-      filterPrompt,
-      model: options.model,
+      previousProcessed,
     });
+
+    const selectedLinks = new Set<string>();
+    if (unprocessedItems.length > 0) {
+      const processedDelta = await processFeedForSource({
+        sourcePath: options.sourcePath,
+        feedUrl,
+        feed: { ...mergedFeed, items: unprocessedItems },
+        filter: { prompt: filterPrompt },
+        model: options.model,
+      });
+      for (const item of processedDelta.items) {
+        selectedLinks.add(item.link);
+      }
+    }
+
+    const processedFeed = buildSourceFeedCacheFromDelta({
+      mergedFeed,
+      unprocessedItems,
+      selectedLinks,
+      keptLinks,
+      omittedLinks,
+    });
+
+    await writeSourceFeedCache(processedCachePath, processedFeed);
     feeds.push(processedFeed);
   }
 
