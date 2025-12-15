@@ -23,8 +23,12 @@ If `filter` is present in your `source.yaml`, `rosso fetch` filters each feed's 
 - LLM calls use Vercel AI SDK `generateObject` with a structured output schema.
 - Feed items are processed in chunks of 10 per LLM call.
 - `filter` format: `filter: { prompt: "<your criteria>" }`
-- Required CLI flags: `--model-provider openai --model <name>`
+- Required CLI flags: `--model-provider <provider> --model <name>` (provider: `openai`, `github`)
 - Optional: `--model-provider-api-key <key>` and `--model-provider-base-url <url>`
+- GitHub provider:
+  - Uses OpenAI-compatible `chat/completions`
+  - Default base URL: `https://models.github.ai/inference`
+  - API key priority: `--model-provider-api-key` → `GITHUB_TOKEN` → `gh auth token`
 
 ## Cache
 - Default location: OS user cache dir (e.g., `$XDG_CACHE_HOME/rosso` on Linux)

@@ -8,7 +8,7 @@ const usageText =
   '\n' +
   'Options:\n' +
   '  --cache-dir <dir>  Override the cache directory\n' +
-  '  --model-provider <provider>  LLM provider (currently: openai)\n' +
+  '  --model-provider <provider>  LLM provider (openai, github)\n' +
   '  --model <name>  Model name (e.g., gpt-5-mini)\n' +
   '  --model-provider-api-key <key>  Provider API key (optional if env var is set)\n' +
   '  --model-provider-base-url <url>  Provider base URL (optional)\n' +

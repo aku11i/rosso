@@ -5,7 +5,7 @@ const usageText =
   'Usage: rosso <command>\n' +
   '\n' +
   'Commands:\n' +
-  '  fetch [source] [--cache-dir <dir>] [--model-provider ...]  Fetch RSS feeds defined in a source.yaml file\n' +
+  '  fetch [source] [--cache-dir <dir>] [--model-provider <provider>]  Fetch RSS feeds defined in a source.yaml file\n' +
   '  build <source> [--cache-dir <dir>] [--output-file <file>]  Build an aggregated RSS feed from cached data\n' +
   '  --help                               Show this message\n';
 

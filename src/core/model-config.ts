@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const modelProviderSchema = z.literal('openai');
+export const modelProviderSchema = z.union([z.literal('openai'), z.literal('github')]);
 export type ModelProvider = z.infer<typeof modelProviderSchema>;
 
 export const modelConfigSchema = z.object({

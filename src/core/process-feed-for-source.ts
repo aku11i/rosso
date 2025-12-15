@@ -1,7 +1,7 @@
 import type { CachedFeed } from '../schema.ts';
 import { modelProviderSchema, type ModelConfig } from './model-config.ts';
-import { createOpenAI } from '@ai-sdk/openai';
 import { filterFeedItemsWithLlm } from './filter-feed-items-with-llm.ts';
+import { resolveLanguageModelFromConfig } from './resolve-language-model.ts';
 
 export type ProcessFeedForSourceOptions = {
   sourcePath: string;
@@ -22,18 +22,12 @@ export async function processFeedForSource(
   if (!options.model) {
     throw new Error(
       `Source file ${options.sourcePath} has "filter", but no model is configured. ` +
-        'Pass --model-provider openai --model <name> (and optionally --model-provider-api-key).',
+        'Pass --model-provider <provider> --model <name> (and optionally --model-provider-api-key).',
     );
   }
 
   modelProviderSchema.parse(options.model.provider);
-
-  const provider = createOpenAI({
-    apiKey: options.model.apiKey,
-    baseURL: options.model.baseURL,
-  });
-
-  const model = provider(options.model.model);
+  const model = await resolveLanguageModelFromConfig(options.model);
   const items = await filterFeedItemsWithLlm({
     model,
     filter: filterPrompt,
