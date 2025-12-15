@@ -7,14 +7,15 @@ export type ProcessFeedForSourceOptions = {
   sourcePath: string;
   feedUrl: string;
   feed: CachedFeed;
-  filter?: string;
+  filter?: { prompt?: string };
   model?: ModelConfig;
 };
 
 export async function processFeedForSource(
   options: ProcessFeedForSourceOptions,
 ): Promise<CachedFeed> {
-  if (!options.filter) {
+  const filterPrompt = options.filter?.prompt?.trim();
+  if (!filterPrompt) {
     return options.feed;
   }
 
@@ -37,7 +38,7 @@ export async function processFeedForSource(
   const model = provider(options.model.model);
   const items = await filterFeedItemsWithLlm({
     model,
-    filter: options.filter,
+    filter: filterPrompt,
     feedUrl: options.feedUrl,
     items: options.feed.items,
   });

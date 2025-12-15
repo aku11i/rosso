@@ -22,6 +22,7 @@ If `filter` is present in your `source.yaml`, `rosso fetch` filters each feed's 
 
 - LLM calls use Vercel AI SDK `generateObject` with a structured output schema.
 - Feed items are processed in chunks of 10 per LLM call.
+- `filter` format: `filter: { prompt: "<your criteria>" }`
 - Required CLI flags: `--model-provider openai --model <name>`
 - Optional: `--model-provider-api-key <key>` and `--model-provider-base-url <url>`
 

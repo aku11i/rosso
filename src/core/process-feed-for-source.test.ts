@@ -53,7 +53,7 @@ test('processFeedForSource throws when filter exists without model config', asyn
       sourcePath: '/tmp/source.yaml',
       feedUrl: feed.url,
       feed,
-      filter: 'Only keep relevant items',
+      filter: { prompt: 'Only keep relevant items' },
     }),
   );
 });
@@ -86,7 +86,7 @@ test('processFeedForSource filters items using generateObject', async () => {
     sourcePath: '/tmp/source.yaml',
     feedUrl: feed.url,
     feed,
-    filter: 'Keep only items with title "Keep"',
+    filter: { prompt: 'Keep only items with title "Keep"' },
     model: { provider: 'openai', model: 'gpt-5-mini', apiKey: 'test' },
   });
 
