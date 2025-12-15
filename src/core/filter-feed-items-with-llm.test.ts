@@ -33,8 +33,17 @@ test('filterFeedItemsWithLlm splits items into chunks of 10', async () => {
   const items = createItems(25);
   let callCount = 0;
 
-  generateObjectHandler = async () => {
+  generateObjectHandler = async (options: unknown) => {
     callCount++;
+    assert.equal(typeof options, 'object');
+    assert.ok(options);
+    const system = (options as { system?: unknown }).system;
+    if (typeof system !== 'string') {
+      throw new Error('expected system prompt string');
+    }
+    assert.ok(system.includes('<system>'));
+    assert.ok(system.includes('<rules>'));
+
     const selected = items[(callCount - 1) * 10]?.link;
     assert.ok(selected, 'expected selected link');
     return { object: { links: [selected, 'https://not-in-chunk.example.com'] } } as never;
