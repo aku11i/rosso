@@ -1,5 +1,6 @@
 import type { RawCachedFeed } from '../schema.ts';
 import { isValidDate } from '../utils/is-valid-date.ts';
+import { makeItemId } from '../utils/make-item-id.ts';
 
 export type AggregatedItem = {
   id: string;
@@ -15,7 +16,7 @@ export function aggregateFeedItems(cachedFeeds: RawCachedFeed[]) {
 
   for (const cachedFeed of cachedFeeds) {
     for (const item of cachedFeed.items) {
-      const key = `${cachedFeed.url}\n${item.link}`;
+      const key = makeItemId(cachedFeed.url, item.link);
       if (seen.has(key)) {
         continue;
       }
