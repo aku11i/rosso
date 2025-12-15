@@ -1,7 +1,7 @@
 import { parseArgs } from 'node:util';
 import { fetchSource } from '../core/fetch-source.ts';
 import { getDefaultCacheRoot } from '../utils/get-default-cache-root.ts';
-import { modelProviderSchema } from '../core/model-config.ts';
+import { modelConfigSchema } from '../core/model-config.ts';
 
 const usageText =
   'Usage: rosso fetch [source] [--cache-dir <dir>]\n' +
@@ -41,36 +41,19 @@ export async function handleFetch(argv: string[]) {
   const sourcePath = positionals[0];
   const cacheRoot = values['cache-dir'] ?? getDefaultCacheRoot();
   const modelProvider = values['model-provider'];
-  const hasAnyModelConfig =
-    Boolean(values.model) ||
-    Boolean(values['model-provider-api-key']) ||
-    Boolean(values['model-provider-base-url']) ||
-    Boolean(modelProvider);
+  const hasAnyModelOptions =
+    modelProvider ||
+    values.model ||
+    values['model-provider-api-key'] ||
+    values['model-provider-base-url'];
 
-  if (hasAnyModelConfig && !modelProvider) {
-    throw new Error(
-      'Missing --model-provider. Pass --model-provider openai with --model when using LLM options.',
-    );
-  }
-
-  if (modelProvider && !values.model) {
-    throw new Error('Missing --model. Pass --model <name> with --model-provider.');
-  }
-
-  if (modelProvider) {
-    const parsedProvider = modelProviderSchema.safeParse(modelProvider);
-    if (!parsedProvider.success) {
-      throw new Error(`Unsupported --model-provider "${modelProvider}" (supported: openai)`);
-    }
-  }
-
-  const model = modelProvider
-    ? {
-        provider: 'openai' as const,
-        model: values.model as string,
+  const model = hasAnyModelOptions
+    ? modelConfigSchema.parse({
+        provider: values['model-provider'],
+        model: values.model,
         apiKey: values['model-provider-api-key'],
         baseURL: values['model-provider-base-url'],
-      }
+      })
     : undefined;
 
   const result = await fetchSource({ cacheRoot, sourcePath, model });
