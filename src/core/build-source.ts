@@ -1,9 +1,9 @@
 import { Feed } from 'feed';
-import type { CachedFeed } from '../schema.ts';
+import type { SourceCachedFeed } from '../schema.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import { aggregateFeedItems } from './aggregate-feed-items.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
-import { readFeedCache } from './read-feed-cache.ts';
+import { readSourceFeedCache } from './read-source-feed-cache.ts';
 import { hashSourcePath } from '../utils/hash-source-path.ts';
 
 export type BuildSourceOptions = {
@@ -22,10 +22,10 @@ export async function buildSource(options: BuildSourceOptions): Promise<string> 
     }
   }
 
-  const cachedFeeds: CachedFeed[] = [];
+  const cachedFeeds: SourceCachedFeed[] = [];
   for (const feedUrl of feedUrls) {
     const processedCachePath = getSourceFeedCachePath(options.cacheRoot, sourceHash, feedUrl);
-    const processedCached = await readFeedCache(processedCachePath);
+    const processedCached = await readSourceFeedCache(processedCachePath);
     if (!processedCached) {
       throw new Error(
         `Missing cache for ${feedUrl}. Run "rosso fetch ${options.sourcePath}" first.`,

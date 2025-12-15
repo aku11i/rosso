@@ -1,7 +1,7 @@
 import { parseFeed } from '@rowanmanning/feed-parser';
-import type { CachedFeed, CachedItem } from '../schema.ts';
+import type { RawCachedFeed, CachedItem } from '../schema.ts';
 
-export async function fetchFeed(feedUrl: string, fetchTimestamp: string): Promise<CachedFeed> {
+export async function fetchFeed(feedUrl: string, fetchTimestamp: string): Promise<RawCachedFeed> {
   const response = await fetch(feedUrl);
 
   if (!response.ok) {

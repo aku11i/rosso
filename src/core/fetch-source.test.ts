@@ -6,7 +6,7 @@ import os from 'node:os';
 import { fetchSource } from './fetch-source.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
-import type { CachedFeed } from '../schema.ts';
+import type { RawCachedFeed, SourceCachedFeed } from '../schema.ts';
 import { hashSourcePath } from '../utils/hash-source-path.ts';
 
 const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
@@ -40,7 +40,7 @@ test('fetchSource dedupes feeds and merges cache', async () => {
   );
 
   const cachePath = getFeedCachePath(cacheRoot, 'https://example.com/feed.xml');
-  const previousCache: CachedFeed = {
+  const previousCache: RawCachedFeed = {
     title: 'Old title',
     description: null,
     url: 'https://example.com/feed.xml',
@@ -73,7 +73,7 @@ test('fetchSource dedupes feeds and merges cache', async () => {
   assert.equal(items[0].timestamp, '2024-04-01T00:00:00.000Z');
   assert.ok(Date.parse(result.fetchedAt));
 
-  const diskCache = JSON.parse(await readFile(cachePath, 'utf8')) as CachedFeed;
+  const diskCache = JSON.parse(await readFile(cachePath, 'utf8')) as RawCachedFeed;
   assert.equal(diskCache.title, 'Feed');
   assert.equal(diskCache.items[0].title, 'Fresh');
 
@@ -83,7 +83,7 @@ test('fetchSource dedupes feeds and merges cache', async () => {
     sourceHash,
     'https://example.com/feed.xml',
   );
-  const processedCache = JSON.parse(await readFile(processedCachePath, 'utf8')) as CachedFeed;
+  const processedCache = JSON.parse(await readFile(processedCachePath, 'utf8')) as SourceCachedFeed;
   assert.equal(processedCache.items[0].title, 'Fresh');
 
   fetchMock.mock.restore();

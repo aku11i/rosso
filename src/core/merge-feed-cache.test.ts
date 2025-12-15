@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { mergeFeedCache } from './merge-feed-cache.ts';
-import type { CachedFeed } from '../schema.ts';
+import type { RawCachedFeed } from '../schema.ts';
 
 test('mergeFeedCache keeps existing items and updates duplicates', () => {
-  const previous: CachedFeed = {
+  const previous: RawCachedFeed = {
     title: 'Old title',
     description: 'old desc',
     url: 'https://example.com/feed.xml',
@@ -14,7 +14,7 @@ test('mergeFeedCache keeps existing items and updates duplicates', () => {
     ],
   };
 
-  const fetched: CachedFeed = {
+  const fetched: RawCachedFeed = {
     title: 'New title',
     description: null,
     url: 'https://example.com/feed.xml',
@@ -35,7 +35,7 @@ test('mergeFeedCache keeps existing items and updates duplicates', () => {
 });
 
 test('mergeFeedCache handles missing previous cache', () => {
-  const fetched: CachedFeed = {
+  const fetched: RawCachedFeed = {
     title: 'Title',
     description: 'desc',
     url: 'https://example.com/feed.xml',

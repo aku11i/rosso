@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test, { mock } from 'node:test';
-import type { CachedFeed } from '../schema.ts';
+import type { RawCachedFeed } from '../schema.ts';
 
 let generateObjectHandler = async (..._args: unknown[]) => ({ object: { links: [] } });
 let createOpenAICalls: Array<{ apiKey?: string; baseURL?: string }> = [];
@@ -47,7 +47,7 @@ test.beforeEach(() => {
 });
 
 test('processFeedForSource returns feed unchanged when no filter is provided', async () => {
-  const feed: CachedFeed = {
+  const feed: RawCachedFeed = {
     title: 'Feed',
     description: null,
     url: 'https://example.com/feed.xml',
@@ -71,7 +71,7 @@ test('processFeedForSource returns feed unchanged when no filter is provided', a
 });
 
 test('processFeedForSource throws when filter exists without model config', async () => {
-  const feed: CachedFeed = {
+  const feed: RawCachedFeed = {
     title: 'Feed',
     description: null,
     url: 'https://example.com/feed.xml',
@@ -92,7 +92,7 @@ test('processFeedForSource filters items using generateObject', async () => {
   generateObjectHandler = async () =>
     ({ object: { links: ['https://example.com/keep'] } }) as never;
 
-  const feed: CachedFeed = {
+  const feed: RawCachedFeed = {
     title: 'Feed',
     description: null,
     url: 'https://example.com/feed.xml',
@@ -130,7 +130,7 @@ test('processFeedForSource uses chat/completions for github provider', async () 
   generateObjectHandler = async () =>
     ({ object: { links: ['https://example.com/keep'] } }) as never;
 
-  const feed: CachedFeed = {
+  const feed: RawCachedFeed = {
     title: 'Feed',
     description: null,
     url: 'https://example.com/feed.xml',

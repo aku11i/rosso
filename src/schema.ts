@@ -12,12 +12,24 @@ export const cachedItemSchema = z.object({
   timestamp: z.string(),
 });
 
-export const cachedFeedSchema = z.object({
-  title: z.string().nullable(),
-  description: z.string().nullable(),
-  url: z.string(),
-  items: z.array(cachedItemSchema),
-});
+export const rawCachedFeedSchema = z
+  .object({
+    title: z.string().nullable(),
+    description: z.string().nullable(),
+    url: z.string(),
+    items: z.array(cachedItemSchema),
+  })
+  .strict();
+
+export const sourceCachedFeedSchema = z
+  .object({
+    title: z.string().nullable(),
+    description: z.string().nullable(),
+    url: z.string(),
+    items: z.array(cachedItemSchema),
+    omittedLinks: z.array(z.string().trim().min(1)).optional(),
+  })
+  .strict();
 
 export const sourceSchema = z.object({
   name: z.string().trim().min(1, 'name is required'),
@@ -33,5 +45,6 @@ export const sourceSchema = z.object({
 
 export type FeedEntry = z.infer<typeof feedEntrySchema>;
 export type CachedItem = z.infer<typeof cachedItemSchema>;
-export type CachedFeed = z.infer<typeof cachedFeedSchema>;
+export type RawCachedFeed = z.infer<typeof rawCachedFeedSchema>;
+export type SourceCachedFeed = z.infer<typeof sourceCachedFeedSchema>;
 export type SourceDefinition = z.infer<typeof sourceSchema>;

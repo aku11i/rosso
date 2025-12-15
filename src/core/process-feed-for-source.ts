@@ -1,4 +1,4 @@
-import type { CachedFeed } from '../schema.ts';
+import type { RawCachedFeed } from '../schema.ts';
 import { modelProviderSchema, type ModelConfig } from './model-config.ts';
 import { filterFeedItemsWithLlm } from './filter-feed-items-with-llm.ts';
 import { resolveLanguageModelFromConfig } from './resolve-language-model.ts';
@@ -6,14 +6,14 @@ import { resolveLanguageModelFromConfig } from './resolve-language-model.ts';
 export type ProcessFeedForSourceOptions = {
   sourcePath: string;
   feedUrl: string;
-  feed: CachedFeed;
+  feed: RawCachedFeed;
   filter?: { prompt?: string };
   model?: ModelConfig;
 };
 
 export async function processFeedForSource(
   options: ProcessFeedForSourceOptions,
-): Promise<CachedFeed> {
+): Promise<RawCachedFeed> {
   const filterPrompt = options.filter?.prompt?.trim();
   if (!filterPrompt) {
     return options.feed;
