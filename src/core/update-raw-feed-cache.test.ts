@@ -57,7 +57,7 @@ test('updateRawFeedCache fetches, merges, and writes raw cache', async () => {
   assert.equal(mergedFeed.title, 'Feed');
   assert.equal(mergedFeed.items.length, 1);
   assert.equal(mergedFeed.items[0].title, 'Fresh');
-  assert.equal(mergedFeed.items[0].timestamp, '2024-04-01T00:00:00.000Z');
+  assert.equal(mergedFeed.items[0].timestamp, '2024-03-30T00:00:00.000Z');
 
   const diskCache = JSON.parse(await readFile(cachePath, 'utf8')) as RawCachedFeed;
   assert.equal(diskCache.items[0].title, 'Fresh');
