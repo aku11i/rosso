@@ -46,6 +46,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "biome check .",
     "fix": "biome check --write --unsafe .",
+    "ready": "pnpm run fix && pnpm run typecheck && pnpm run test",
+    "ready:check": "pnpm run lint && pnpm run typecheck && pnpm run test",
     "prepack": "npm run build",
     "prepublishOnly": "npm run typecheck && npm test"
   },

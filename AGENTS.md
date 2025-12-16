@@ -22,6 +22,7 @@
   - `make test` – run unit/integration tests; keep it idempotent.
   - `make run` – start the local app/CLI.
 - If you add ad-hoc scripts, place them in `scripts/`, make them POSIX-shell compatible, and call them from the targets above (e.g., `scripts/test.sh` invoking `pytest` or `npm test`).
+- After finishing implementation changes, always run `pnpm ready` before handing off.
 
 ## Coding Style & Naming Conventions
 - Enforce automatic formatting (e.g., `prettier`, `ruff`/`black`, `gofmt`, or `rustfmt` depending on the chosen stack) and commit the config at the repo root.
