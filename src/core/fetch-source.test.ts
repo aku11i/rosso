@@ -70,7 +70,7 @@ test('fetchSource dedupes feeds and merges cache', async () => {
   const items = result.feeds[0].items;
   assert.equal(items.length, 1);
   assert.equal(items[0].title, 'Fresh');
-  assert.equal(items[0].timestamp, '2024-04-01T00:00:00.000Z');
+  assert.equal(items[0].timestamp, '2024-03-30T00:00:00.000Z');
   assert.ok(Date.parse(result.fetchedAt));
 
   const diskCache = JSON.parse(await readFile(cachePath, 'utf8')) as RawCachedFeed;

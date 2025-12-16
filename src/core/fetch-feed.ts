@@ -35,7 +35,9 @@ export async function fetchFeed(feedUrl: string, fetchTimestamp: string): Promis
     });
   }
 
-  const limitedItems = sortCachedItemsByTimestampDesc(items).slice(0, MAX_ITEMS_PER_FEED);
+  const limitedItems = sortCachedItemsByTimestampDesc(items)
+    .slice(0, MAX_ITEMS_PER_FEED)
+    .map((item) => ({ ...item, timestamp: fetchTimestamp }));
 
   return {
     title: feed.title ?? null,

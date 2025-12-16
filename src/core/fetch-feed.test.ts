@@ -47,7 +47,7 @@ test('fetchFeed filters duplicates and missing links', async () => {
   assert.equal(first.link, 'https://example.com/b');
   assert.equal(first.timestamp, fetchTimestamp);
   assert.equal(second.link, 'https://example.com/a');
-  assert.equal(second.timestamp, '2024-01-01T00:00:00.000Z');
+  assert.equal(second.timestamp, fetchTimestamp);
 
   fetchMock.mock.restore();
 });

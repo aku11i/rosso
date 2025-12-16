@@ -16,7 +16,7 @@ export function mergeFeedCache(
   for (const item of fetchedFeed.items) {
     const index = combinedItems.findIndex((existing) => existing.link === item.link);
     if (index >= 0) {
-      combinedItems[index] = item;
+      combinedItems[index] = { ...item, timestamp: combinedItems[index]!.timestamp };
       continue;
     }
     combinedItems.push(item);
