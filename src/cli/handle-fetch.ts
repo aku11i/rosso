@@ -1,5 +1,6 @@
 import { parseArgs } from 'node:util';
 import { fetchSource } from '../core/fetch-source.ts';
+import { createFileSystemCacheStore } from '../core/create-file-system-cache-store.ts';
 import { getDefaultCacheRoot } from '../utils/get-default-cache-root.ts';
 import { modelConfigSchema } from '../core/model-config.ts';
 
@@ -40,6 +41,7 @@ export async function handleFetch(argv: string[]) {
 
   const sourcePath = positionals[0];
   const cacheRoot = values['cache-dir'] ?? getDefaultCacheRoot();
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
   const modelProvider = values['model-provider'];
   const hasAnyModelOptions =
     modelProvider ||
@@ -56,7 +58,7 @@ export async function handleFetch(argv: string[]) {
       })
     : undefined;
 
-  const result = await fetchSource({ cacheRoot, sourcePath, model });
+  const result = await fetchSource({ cacheStore, sourcePath, model });
 
   let totalItems = 0;
   for (const feed of result.feeds) {

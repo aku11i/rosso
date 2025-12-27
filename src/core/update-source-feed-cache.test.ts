@@ -4,11 +4,13 @@ import { mkdtemp, writeFile, readFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import type { SourceCachedFeed } from '../schema.ts';
+import { createFileSystemCacheStore } from './create-file-system-cache-store.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import { updateSourceFeedCache } from './update-source-feed-cache.ts';
 
 test('updateSourceFeedCache writes merged feed when no filter is set', async () => {
   const cacheRoot = await mkdtemp(path.join(os.tmpdir(), 'rosso-update-source-'));
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
   const sourceHash = 'source-hash';
   const sourcePath = path.join(cacheRoot, 'source.yaml');
   await writeFile(sourcePath, 'name: a\ndescription: b\nlink: c\nfeeds: []\n', 'utf8');
@@ -29,7 +31,7 @@ test('updateSourceFeedCache writes merged feed when no filter is set', async () 
   };
 
   const processed = await updateSourceFeedCache({
-    cacheRoot,
+    cacheStore,
     sourceHash,
     sourcePath,
     feedUrl,
@@ -46,6 +48,7 @@ test('updateSourceFeedCache writes merged feed when no filter is set', async () 
 
 test('updateSourceFeedCache skips processing when there are no unprocessed items', async () => {
   const cacheRoot = await mkdtemp(path.join(os.tmpdir(), 'rosso-update-source-skip-'));
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
   const sourceHash = 'source-hash';
   const sourcePath = path.join(cacheRoot, 'source.yaml');
   await writeFile(sourcePath, 'name: a\ndescription: b\nlink: c\nfeeds: []\n', 'utf8');
@@ -91,7 +94,7 @@ test('updateSourceFeedCache skips processing when there are no unprocessed items
   };
 
   const processed = await updateSourceFeedCache({
-    cacheRoot,
+    cacheStore,
     sourceHash,
     sourcePath,
     feedUrl,

@@ -1,13 +1,14 @@
 import type { SourceCachedFeed } from '../schema.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
 import { hashSourcePath } from '../utils/hash-source-path.ts';
+import type { CacheStore } from './cache-store.ts';
 import type { ModelConfig } from './model-config.ts';
 import { getUniqueFeedUrls } from './get-unique-feed-urls.ts';
 import { updateRawFeedCache } from './update-raw-feed-cache.ts';
 import { updateSourceFeedCache } from './update-source-feed-cache.ts';
 
 export type FetchSourceOptions = {
-  cacheRoot: string;
+  cacheStore: CacheStore;
   sourcePath: string;
   model?: ModelConfig;
 };
@@ -28,13 +29,13 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
   const feeds: SourceCachedFeed[] = [];
   for (const feedUrl of feedUrls) {
     const mergedFeed = await updateRawFeedCache({
-      cacheRoot: options.cacheRoot,
+      cacheStore: options.cacheStore,
       feedUrl,
       fetchedAt,
     });
 
     const processedFeed = await updateSourceFeedCache({
-      cacheRoot: options.cacheRoot,
+      cacheStore: options.cacheStore,
       sourceHash,
       sourcePath: options.sourcePath,
       feedUrl,

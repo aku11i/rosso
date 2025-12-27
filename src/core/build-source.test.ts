@@ -4,6 +4,7 @@ import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { buildSource } from './build-source.ts';
+import { createFileSystemCacheStore } from './create-file-system-cache-store.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import { writeSourceFeedCache } from './write-source-feed-cache.ts';
 import { hashSourcePath } from '../utils/hash-source-path.ts';
@@ -28,6 +29,7 @@ async function setupSource(directory: string, filename = 'source.yaml') {
 test('buildSource returns RSS XML from cache', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-build-source-'));
   const cacheRoot = path.join(tempDir, 'cache');
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
   const sourcePath = await setupSource(tempDir);
 
   const sourceHash = await hashSourcePath(sourcePath);
@@ -56,7 +58,7 @@ test('buildSource returns RSS XML from cache', async () => {
     ],
   });
 
-  const xml = await buildSource({ cacheRoot, sourcePath });
+  const xml = await buildSource({ cacheStore, sourcePath });
   assert.ok(xml.includes('<rss'));
   assert.ok(xml.includes('Example Source'));
 
@@ -76,6 +78,7 @@ test('buildSource returns RSS XML from cache', async () => {
 test('buildSource throws when cache is missing', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-build-source-'));
   const cacheRoot = path.join(tempDir, 'cache');
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
   const sourcePath = await setupSource(tempDir);
-  await assert.rejects(buildSource({ cacheRoot, sourcePath }), /Missing cache/);
+  await assert.rejects(buildSource({ cacheStore, sourcePath }), /Missing cache/);
 });

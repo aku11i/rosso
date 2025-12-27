@@ -4,6 +4,7 @@ import { mkdtemp, writeFile, readFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { fetchSource } from './fetch-source.ts';
+import { createFileSystemCacheStore } from './create-file-system-cache-store.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import type { RawCachedFeed, SourceCachedFeed } from '../schema.ts';
@@ -23,6 +24,7 @@ const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 
 test('fetchSource dedupes feeds and merges cache', async () => {
   const cacheRoot = await mkdtemp(path.join(os.tmpdir(), 'rosso-fetch-source-'));
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
   const sourcePath = path.join(cacheRoot, 'source.yaml');
   await writeFile(
     sourcePath,
@@ -63,7 +65,7 @@ test('fetchSource dedupes feeds and merges cache', async () => {
     text: async () => rssFeed,
   }));
 
-  const result = await fetchSource({ cacheRoot, sourcePath });
+  const result = await fetchSource({ cacheStore, sourcePath });
 
   assert.equal(fetchMock.mock.callCount(), 1);
   assert.equal(result.feeds.length, 1);

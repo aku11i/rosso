@@ -4,6 +4,7 @@ import { mkdtemp, writeFile, readFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import type { RawCachedFeed, SourceCachedFeed } from '../schema.ts';
+import { createFileSystemCacheStore } from './create-file-system-cache-store.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import { hashSourcePath } from '../utils/hash-source-path.ts';
@@ -56,6 +57,7 @@ test.beforeEach(() => {
 test('fetchSource passes only unprocessed items to processFeedForSource', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-fetch-source-omit-'));
   const cacheRoot = path.join(tempDir, 'cache');
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
   const sourcePath = path.join(tempDir, 'source.yaml');
   const filterPrompt = 'Keep only items related to X';
 
@@ -130,7 +132,7 @@ test('fetchSource passes only unprocessed items to processFeedForSource', async 
     text: async () => rss,
   }));
 
-  const result = await fetchSource({ cacheRoot, sourcePath });
+  const result = await fetchSource({ cacheStore, sourcePath });
   assert.equal(result.feeds.length, 1);
 
   assert.equal(callCount, 1);
@@ -153,6 +155,7 @@ test('fetchSource passes only unprocessed items to processFeedForSource', async 
 test('fetchSource skips processFeedForSource when there are no unprocessed items', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-fetch-source-omit-empty-'));
   const cacheRoot = path.join(tempDir, 'cache');
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
   const sourcePath = path.join(tempDir, 'source.yaml');
   const filterPrompt = 'Keep only items related to X';
 
@@ -227,7 +230,7 @@ test('fetchSource skips processFeedForSource when there are no unprocessed items
     text: async () => rss,
   }));
 
-  await fetchSource({ cacheRoot, sourcePath });
+  await fetchSource({ cacheStore, sourcePath });
   assert.equal(callCount, 0);
   assert.equal(lastProcessOptions, undefined);
 

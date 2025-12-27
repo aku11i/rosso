@@ -4,6 +4,7 @@ import { mkdtemp, writeFile, readFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import type { RawCachedFeed } from '../schema.ts';
+import { createFileSystemCacheStore } from './create-file-system-cache-store.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { updateRawFeedCache } from './update-raw-feed-cache.ts';
 
@@ -21,6 +22,7 @@ const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 
 test('updateRawFeedCache fetches, merges, and writes raw cache', async () => {
   const cacheRoot = await mkdtemp(path.join(os.tmpdir(), 'rosso-update-raw-'));
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
   const feedUrl = 'https://example.com/feed.xml';
   const cachePath = getFeedCachePath(cacheRoot, feedUrl);
 
@@ -48,7 +50,7 @@ test('updateRawFeedCache fetches, merges, and writes raw cache', async () => {
   }));
 
   const mergedFeed = await updateRawFeedCache({
-    cacheRoot,
+    cacheStore,
     feedUrl,
     fetchedAt: '2024-05-01T00:00:00.000Z',
   });
