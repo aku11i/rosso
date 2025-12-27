@@ -1,6 +1,6 @@
 import type { SourceCachedFeed } from '../schema.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
-import { hashSourcePath } from '../utils/hash-source-path.ts';
+import { getSourceIdFromPath } from '../utils/get-source-id-from-path.ts';
 import type { CacheStore } from './cache-store.ts';
 import type { ModelConfig } from './model-config.ts';
 import { getUniqueFeedUrls } from './get-unique-feed-urls.ts';
@@ -21,7 +21,7 @@ export type FetchSourceResult = {
 export async function fetchSource(options: FetchSourceOptions): Promise<FetchSourceResult> {
   const definition = await loadSourceDefinition(options.sourcePath);
   const fetchedAt = new Date().toISOString();
-  const sourceHash = await hashSourcePath(options.sourcePath);
+  const sourceId = await getSourceIdFromPath(options.sourcePath);
   const filterPrompt = definition.filter?.prompt?.trim() ?? null;
 
   const feedUrls = getUniqueFeedUrls(definition.feeds);
@@ -36,7 +36,7 @@ export async function fetchSource(options: FetchSourceOptions): Promise<FetchSou
 
     const processedFeed = await updateSourceFeedCache({
       cacheStore: options.cacheStore,
-      sourceHash,
+      sourceId,
       sourcePath: options.sourcePath,
       feedUrl,
       mergedFeed,

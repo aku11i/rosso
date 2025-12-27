@@ -7,7 +7,7 @@ import { processFeedForSource } from './process-feed-for-source.ts';
 
 export type UpdateSourceFeedCacheOptions = {
   cacheStore: CacheStore;
-  sourceHash: string;
+  sourceId: string;
   sourcePath: string;
   feedUrl: string;
   mergedFeed: SourceCachedFeed;
@@ -19,16 +19,12 @@ export async function updateSourceFeedCache(
   options: UpdateSourceFeedCacheOptions,
 ): Promise<SourceCachedFeed> {
   if (!options.filterPrompt) {
-    await options.cacheStore.writeSourceFeed(
-      options.sourceHash,
-      options.feedUrl,
-      options.mergedFeed,
-    );
+    await options.cacheStore.writeSourceFeed(options.sourceId, options.feedUrl, options.mergedFeed);
     return options.mergedFeed;
   }
 
   const previousProcessed = await options.cacheStore.readSourceFeed(
-    options.sourceHash,
+    options.sourceId,
     options.feedUrl,
   );
   const { unprocessedItems, keptLinks, omittedLinks } = getUnprocessedItemsForSource({
@@ -60,7 +56,7 @@ export async function updateSourceFeedCache(
     omittedLinks,
   });
 
-  await options.cacheStore.writeSourceFeed(options.sourceHash, options.feedUrl, processedFeed);
+  await options.cacheStore.writeSourceFeed(options.sourceId, options.feedUrl, processedFeed);
 
   return processedFeed;
 }

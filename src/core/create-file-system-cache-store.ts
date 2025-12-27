@@ -10,9 +10,9 @@ export function createFileSystemCacheStore(cacheRoot: string): CacheStore {
   return {
     readRawFeed: (feedUrl) => readRawFeedCache(getFeedCachePath(cacheRoot, feedUrl)),
     writeRawFeed: (feedUrl, feed) => writeRawFeedCache(getFeedCachePath(cacheRoot, feedUrl), feed),
-    readSourceFeed: (sourceHash, feedUrl) =>
-      readSourceFeedCache(getSourceFeedCachePath(cacheRoot, sourceHash, feedUrl)),
-    writeSourceFeed: (sourceHash, feedUrl, feed) =>
-      writeSourceFeedCache(getSourceFeedCachePath(cacheRoot, sourceHash, feedUrl), feed),
+    readSourceFeed: (sourceId, feedUrl) =>
+      readSourceFeedCache(getSourceFeedCachePath(cacheRoot, sourceId, feedUrl)),
+    writeSourceFeed: (sourceId, feedUrl, feed) =>
+      writeSourceFeedCache(getSourceFeedCachePath(cacheRoot, sourceId, feedUrl), feed),
   };
 }

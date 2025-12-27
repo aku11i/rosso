@@ -7,7 +7,7 @@ import type { RawCachedFeed, SourceCachedFeed } from '../schema.ts';
 import { createFileSystemCacheStore } from './create-file-system-cache-store.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
-import { hashSourcePath } from '../utils/hash-source-path.ts';
+import { getSourceIdFromPath } from '../utils/get-source-id-from-path.ts';
 
 const rssFeedWithItems = (items: Array<{ title: string; link: string; pubDate: string }>) =>
   [
@@ -100,8 +100,8 @@ test('fetchSource passes only unprocessed items to processFeedForSource', async 
   await mkdir(path.dirname(rawCachePath), { recursive: true });
   await writeFile(rawCachePath, JSON.stringify(previousRaw), 'utf8');
 
-  const sourceHash = await hashSourcePath(sourcePath);
-  const processedCachePath = getSourceFeedCachePath(cacheRoot, sourceHash, feedUrl);
+  const sourceId = await getSourceIdFromPath(sourcePath);
+  const processedCachePath = getSourceFeedCachePath(cacheRoot, sourceId, feedUrl);
   const previousProcessed: SourceCachedFeed = {
     title: 'Feed',
     description: null,
@@ -199,8 +199,8 @@ test('fetchSource skips processFeedForSource when there are no unprocessed items
   await mkdir(path.dirname(rawCachePath), { recursive: true });
   await writeFile(rawCachePath, JSON.stringify(previousRaw), 'utf8');
 
-  const sourceHash = await hashSourcePath(sourcePath);
-  const processedCachePath = getSourceFeedCachePath(cacheRoot, sourceHash, feedUrl);
+  const sourceId = await getSourceIdFromPath(sourcePath);
+  const processedCachePath = getSourceFeedCachePath(cacheRoot, sourceId, feedUrl);
   const previousProcessed: SourceCachedFeed = {
     title: 'Feed',
     description: null,

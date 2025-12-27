@@ -7,7 +7,7 @@ import { buildSource } from './build-source.ts';
 import { createFileSystemCacheStore } from './create-file-system-cache-store.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import { writeSourceFeedCache } from './write-source-feed-cache.ts';
-import { hashSourcePath } from '../utils/hash-source-path.ts';
+import { getSourceIdFromPath } from '../utils/get-source-id-from-path.ts';
 
 async function setupSource(directory: string, filename = 'source.yaml') {
   const sourcePath = path.join(directory, filename);
@@ -32,10 +32,10 @@ test('buildSource returns RSS XML from cache', async () => {
   const cacheStore = createFileSystemCacheStore(cacheRoot);
   const sourcePath = await setupSource(tempDir);
 
-  const sourceHash = await hashSourcePath(sourcePath);
+  const sourceId = await getSourceIdFromPath(sourcePath);
   const processedCachePath = getSourceFeedCachePath(
     cacheRoot,
-    sourceHash,
+    sourceId,
     'https://example.com/feed.xml',
   );
   await writeSourceFeedCache(processedCachePath, {

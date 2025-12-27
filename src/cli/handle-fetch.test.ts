@@ -6,7 +6,7 @@ import os from 'node:os';
 import { handleFetch } from './handle-fetch.ts';
 import { getFeedCachePath } from '../core/get-feed-cache-path.ts';
 import { getSourceFeedCachePath } from '../core/get-source-feed-cache-path.ts';
-import { hashSourcePath } from '../utils/hash-source-path.ts';
+import { getSourceIdFromPath } from '../utils/get-source-id-from-path.ts';
 
 const sampleRss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -64,10 +64,10 @@ test('handleFetch fetches default source and writes cache', async () => {
 
   const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
   const cacheContent = JSON.parse(await readFile(cachePath, 'utf8'));
-  const sourceHash = await hashSourcePath(sourcePath);
+  const sourceId = await getSourceIdFromPath(sourcePath);
   const processedCachePath = getSourceFeedCachePath(
     cacheDir,
-    sourceHash,
+    sourceId,
     'https://example.com/feed.xml',
   );
   const processedContent = JSON.parse(await readFile(processedCachePath, 'utf8'));
@@ -103,10 +103,10 @@ test('handleFetch uses custom source path', async () => {
 
   const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
   const cacheContent = JSON.parse(await readFile(cachePath, 'utf8'));
-  const sourceHash = await hashSourcePath(path.join(tempDir, 'custom.yaml'));
+  const sourceId = await getSourceIdFromPath(path.join(tempDir, 'custom.yaml'));
   const processedCachePath = getSourceFeedCachePath(
     cacheDir,
-    sourceHash,
+    sourceId,
     'https://example.com/feed.xml',
   );
   const processedContent = JSON.parse(await readFile(processedCachePath, 'utf8'));
