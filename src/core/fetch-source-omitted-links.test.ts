@@ -7,6 +7,7 @@ import type { RawCachedFeed, SourceCachedFeed } from '../schema.ts';
 import { createFileSystemCacheStore } from './create-file-system-cache-store.ts';
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
+import { getSourceIdFromPath } from '../utils/get-source-id-from-path.ts';
 
 const rssFeedWithItems = (items: Array<{ title: string; link: string; pubDate: string }>) =>
   [
@@ -57,14 +58,12 @@ test('fetchSource passes only unprocessed items to processFeedForSource', async 
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-fetch-source-omit-'));
   const cacheRoot = path.join(tempDir, 'cache');
   const cacheStore = createFileSystemCacheStore(cacheRoot);
-  const sourceId = 'example-source';
   const sourcePath = path.join(tempDir, 'source.yaml');
   const filterPrompt = 'Keep only items related to X';
 
   await writeFile(
     sourcePath,
     [
-      `sourceId: ${sourceId}`,
       'name: Example Source',
       'description: Demo source',
       'link: https://example.com',
@@ -101,6 +100,7 @@ test('fetchSource passes only unprocessed items to processFeedForSource', async 
   await mkdir(path.dirname(rawCachePath), { recursive: true });
   await writeFile(rawCachePath, JSON.stringify(previousRaw), 'utf8');
 
+  const sourceId = await getSourceIdFromPath(sourcePath);
   const processedCachePath = getSourceFeedCachePath(cacheRoot, sourceId, feedUrl);
   const previousProcessed: SourceCachedFeed = {
     title: 'Feed',
@@ -156,14 +156,12 @@ test('fetchSource skips processFeedForSource when there are no unprocessed items
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-fetch-source-omit-empty-'));
   const cacheRoot = path.join(tempDir, 'cache');
   const cacheStore = createFileSystemCacheStore(cacheRoot);
-  const sourceId = 'example-source';
   const sourcePath = path.join(tempDir, 'source.yaml');
   const filterPrompt = 'Keep only items related to X';
 
   await writeFile(
     sourcePath,
     [
-      `sourceId: ${sourceId}`,
       'name: Example Source',
       'description: Demo source',
       'link: https://example.com',
@@ -201,6 +199,7 @@ test('fetchSource skips processFeedForSource when there are no unprocessed items
   await mkdir(path.dirname(rawCachePath), { recursive: true });
   await writeFile(rawCachePath, JSON.stringify(previousRaw), 'utf8');
 
+  const sourceId = await getSourceIdFromPath(sourcePath);
   const processedCachePath = getSourceFeedCachePath(cacheRoot, sourceId, feedUrl);
   const previousProcessed: SourceCachedFeed = {
     title: 'Feed',

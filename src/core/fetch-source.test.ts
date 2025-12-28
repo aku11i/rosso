@@ -8,6 +8,7 @@ import { createFileSystemCacheStore } from './create-file-system-cache-store.ts'
 import { getFeedCachePath } from './get-feed-cache-path.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import type { RawCachedFeed, SourceCachedFeed } from '../schema.ts';
+import { getSourceIdFromPath } from '../utils/get-source-id-from-path.ts';
 
 const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -24,12 +25,10 @@ const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 test('fetchSource dedupes feeds and merges cache', async () => {
   const cacheRoot = await mkdtemp(path.join(os.tmpdir(), 'rosso-fetch-source-'));
   const cacheStore = createFileSystemCacheStore(cacheRoot);
-  const sourceId = 'example-source';
   const sourcePath = path.join(cacheRoot, 'source.yaml');
   await writeFile(
     sourcePath,
     [
-      `sourceId: ${sourceId}`,
       'name: Example Source',
       'description: Demo source',
       'link: https://example.com',
@@ -80,6 +79,7 @@ test('fetchSource dedupes feeds and merges cache', async () => {
   assert.equal(diskCache.title, 'Feed');
   assert.equal(diskCache.items[0].title, 'Fresh');
 
+  const sourceId = await getSourceIdFromPath(sourcePath);
   const processedCachePath = getSourceFeedCachePath(
     cacheRoot,
     sourceId,

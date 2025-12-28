@@ -15,7 +15,6 @@ async function createSourceFile(contents: string) {
 test('loadSourceDefinition parses valid source file', async () => {
   const filePath = await createSourceFile(
     [
-      'sourceId: example-source',
       'name: Example',
       'description: Demo source',
       'link: https://example.com',
@@ -26,7 +25,6 @@ test('loadSourceDefinition parses valid source file', async () => {
   );
 
   const source = await loadSourceDefinition(filePath);
-  assert.equal(source.sourceId, 'example-source');
   assert.equal(source.name, 'Example');
   assert.equal(source.description, 'Demo source');
   assert.equal(source.link, 'https://example.com');

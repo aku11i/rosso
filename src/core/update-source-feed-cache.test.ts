@@ -13,11 +13,7 @@ test('updateSourceFeedCache writes merged feed when no filter is set', async () 
   const cacheStore = createFileSystemCacheStore(cacheRoot);
   const sourceId = 'source-id';
   const sourcePath = path.join(cacheRoot, 'source.yaml');
-  await writeFile(
-    sourcePath,
-    `sourceId: ${sourceId}\nname: a\ndescription: b\nlink: c\nfeeds: []\n`,
-    'utf8',
-  );
+  await writeFile(sourcePath, 'name: a\ndescription: b\nlink: c\nfeeds: []\n', 'utf8');
 
   const feedUrl = 'https://example.com/feed.xml';
   const mergedFeed: SourceCachedFeed = {
@@ -55,11 +51,7 @@ test('updateSourceFeedCache skips processing when there are no unprocessed items
   const cacheStore = createFileSystemCacheStore(cacheRoot);
   const sourceId = 'source-id';
   const sourcePath = path.join(cacheRoot, 'source.yaml');
-  await writeFile(
-    sourcePath,
-    `sourceId: ${sourceId}\nname: a\ndescription: b\nlink: c\nfeeds: []\n`,
-    'utf8',
-  );
+  await writeFile(sourcePath, 'name: a\ndescription: b\nlink: c\nfeeds: []\n', 'utf8');
 
   const feedUrl = 'https://example.com/feed.xml';
   const cachePath = getSourceFeedCachePath(cacheRoot, sourceId, feedUrl);

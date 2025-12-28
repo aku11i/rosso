@@ -6,17 +6,13 @@ import os from 'node:os';
 import { handleBuild } from './handle-build.ts';
 import { getSourceFeedCachePath } from '../core/get-source-feed-cache-path.ts';
 import { writeSourceFeedCache } from '../core/write-source-feed-cache.ts';
+import { getSourceIdFromPath } from '../utils/get-source-id-from-path.ts';
 
-async function setupSource(
-  directory: string,
-  filename = 'source.yaml',
-  sourceId = 'example-source',
-) {
+async function setupSource(directory: string, filename = 'source.yaml') {
   const sourcePath = path.join(directory, filename);
   await writeFile(
     sourcePath,
     [
-      `sourceId: ${sourceId}`,
       'name: Example Source',
       'description: Demo source',
       'link: https://example.com',
@@ -26,7 +22,7 @@ async function setupSource(
     ].join('\n'),
     'utf8',
   );
-  return { sourcePath, sourceId };
+  return sourcePath;
 }
 
 test('handleBuild prints help when requested', async () => {
@@ -40,8 +36,9 @@ test('handleBuild outputs RSS to stdout by default', async () => {
   const cwd = process.cwd();
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-handle-build-'));
   const cacheDir = path.join(tempDir, 'cache');
-  const { sourcePath, sourceId } = await setupSource(tempDir);
+  const sourcePath = await setupSource(tempDir);
 
+  const sourceId = await getSourceIdFromPath(sourcePath);
   const processedCachePath = getSourceFeedCachePath(
     cacheDir,
     sourceId,
@@ -78,8 +75,9 @@ test('handleBuild writes RSS to file when requested', async () => {
   const cwd = process.cwd();
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-handle-build-'));
   const cacheDir = path.join(tempDir, 'cache');
-  const { sourcePath, sourceId } = await setupSource(tempDir);
+  const sourcePath = await setupSource(tempDir);
 
+  const sourceId = await getSourceIdFromPath(sourcePath);
   const processedCachePath = getSourceFeedCachePath(
     cacheDir,
     sourceId,

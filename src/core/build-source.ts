@@ -2,6 +2,7 @@ import { Feed } from 'feed';
 import type { SourceCachedFeed } from '../schema.ts';
 import { aggregateFeedItems } from './aggregate-feed-items.ts';
 import { loadSourceDefinition } from './load-source-definition.ts';
+import { getSourceIdFromPath } from '../utils/get-source-id-from-path.ts';
 import type { CacheStore } from './cache-store.ts';
 
 export type BuildSourceOptions = {
@@ -11,7 +12,7 @@ export type BuildSourceOptions = {
 
 export async function buildSource(options: BuildSourceOptions): Promise<string> {
   const definition = await loadSourceDefinition(options.sourcePath);
-  const { sourceId } = definition;
+  const sourceId = await getSourceIdFromPath(options.sourcePath);
 
   const feedUrls = new Set<string>();
   for (const feed of definition.feeds) {

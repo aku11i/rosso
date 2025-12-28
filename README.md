@@ -21,7 +21,6 @@ Create `source.yaml`:
 
 ```yaml
 name: My Feed
-sourceId: my-feed
 description: A combined feed for my reader
 link: https://example.com/
 feeds:
@@ -49,7 +48,6 @@ If you omit `--output-file`, Rosso prints the RSS XML to stdout.
 
 Required fields:
 
-- `sourceId`
 - `name`
 - `description`
 - `link`
