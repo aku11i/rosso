@@ -1,7 +1,6 @@
 name: Web Frontend Trends
 description: Trending web frontend articles from Zenn and Qiita.
 link: https://example.com/frontend-trends
-sourceId: example-frontend-trends
 filter:
   prompt: |
     Only include articles related to frontend development like JavaScript, TypeScript, React, Vue, or CSS.
