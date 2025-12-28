@@ -1,15 +1,13 @@
 import type { SourceCachedFeed } from '../schema.ts';
+import type { CacheStore } from './cache-store.ts';
 import type { ModelConfig } from './model-config.ts';
 import { buildSourceFeedCacheFromDelta } from './build-source-feed-cache-from-delta.ts';
-import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import { getUnprocessedItemsForSource } from './get-unprocessed-items-for-source.ts';
 import { processFeedForSource } from './process-feed-for-source.ts';
-import { readSourceFeedCache } from './read-source-feed-cache.ts';
-import { writeSourceFeedCache } from './write-source-feed-cache.ts';
 
 export type UpdateSourceFeedCacheOptions = {
-  cacheRoot: string;
-  sourceHash: string;
+  cacheStore: CacheStore;
+  sourceId: string;
   sourcePath: string;
   feedUrl: string;
   mergedFeed: SourceCachedFeed;
@@ -20,14 +18,15 @@ export type UpdateSourceFeedCacheOptions = {
 export async function updateSourceFeedCache(
   options: UpdateSourceFeedCacheOptions,
 ): Promise<SourceCachedFeed> {
-  const cachePath = getSourceFeedCachePath(options.cacheRoot, options.sourceHash, options.feedUrl);
-
   if (!options.filterPrompt) {
-    await writeSourceFeedCache(cachePath, options.mergedFeed);
+    await options.cacheStore.writeSourceFeed(options.sourceId, options.feedUrl, options.mergedFeed);
     return options.mergedFeed;
   }
 
-  const previousProcessed = await readSourceFeedCache(cachePath);
+  const previousProcessed = await options.cacheStore.readSourceFeed(
+    options.sourceId,
+    options.feedUrl,
+  );
   const { unprocessedItems, keptLinks, omittedLinks } = getUnprocessedItemsForSource({
     mergedFeed: options.mergedFeed,
     previousProcessed,
@@ -57,7 +56,7 @@ export async function updateSourceFeedCache(
     omittedLinks,
   });
 
-  await writeSourceFeedCache(cachePath, processedFeed);
+  await options.cacheStore.writeSourceFeed(options.sourceId, options.feedUrl, processedFeed);
 
   return processedFeed;
 }

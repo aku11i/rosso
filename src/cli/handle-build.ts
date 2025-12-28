@@ -2,6 +2,7 @@ import { parseArgs } from 'node:util';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { buildSource } from '../core/build-source.ts';
+import { createFileSystemCacheStore } from '../core/create-file-system-cache-store.ts';
 import { getDefaultCacheRoot } from '../utils/get-default-cache-root.ts';
 
 const usageText =
@@ -35,8 +36,9 @@ export async function handleBuild(argv: string[]) {
 
   const sourcePath = positionals[0];
   const cacheRoot = values['cache-dir'] ?? getDefaultCacheRoot();
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
 
-  const rssXml = await buildSource({ cacheRoot, sourcePath });
+  const rssXml = await buildSource({ cacheStore, sourcePath });
 
   const outputFile = values['output-file'];
   if (outputFile) {

@@ -4,12 +4,14 @@ import { mkdtemp, writeFile, readFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import type { SourceCachedFeed } from '../schema.ts';
+import { createFileSystemCacheStore } from './create-file-system-cache-store.ts';
 import { getSourceFeedCachePath } from './get-source-feed-cache-path.ts';
 import { updateSourceFeedCache } from './update-source-feed-cache.ts';
 
 test('updateSourceFeedCache writes merged feed when no filter is set', async () => {
   const cacheRoot = await mkdtemp(path.join(os.tmpdir(), 'rosso-update-source-'));
-  const sourceHash = 'source-hash';
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
+  const sourceId = 'source-id';
   const sourcePath = path.join(cacheRoot, 'source.yaml');
   await writeFile(sourcePath, 'name: a\ndescription: b\nlink: c\nfeeds: []\n', 'utf8');
 
@@ -29,8 +31,8 @@ test('updateSourceFeedCache writes merged feed when no filter is set', async () 
   };
 
   const processed = await updateSourceFeedCache({
-    cacheRoot,
-    sourceHash,
+    cacheStore,
+    sourceId,
     sourcePath,
     feedUrl,
     mergedFeed,
@@ -39,19 +41,20 @@ test('updateSourceFeedCache writes merged feed when no filter is set', async () 
 
   assert.deepEqual(processed, mergedFeed);
 
-  const cachePath = getSourceFeedCachePath(cacheRoot, sourceHash, feedUrl);
+  const cachePath = getSourceFeedCachePath(cacheRoot, sourceId, feedUrl);
   const diskCache = JSON.parse(await readFile(cachePath, 'utf8')) as SourceCachedFeed;
   assert.deepEqual(diskCache, mergedFeed);
 });
 
 test('updateSourceFeedCache skips processing when there are no unprocessed items', async () => {
   const cacheRoot = await mkdtemp(path.join(os.tmpdir(), 'rosso-update-source-skip-'));
-  const sourceHash = 'source-hash';
+  const cacheStore = createFileSystemCacheStore(cacheRoot);
+  const sourceId = 'source-id';
   const sourcePath = path.join(cacheRoot, 'source.yaml');
   await writeFile(sourcePath, 'name: a\ndescription: b\nlink: c\nfeeds: []\n', 'utf8');
 
   const feedUrl = 'https://example.com/feed.xml';
-  const cachePath = getSourceFeedCachePath(cacheRoot, sourceHash, feedUrl);
+  const cachePath = getSourceFeedCachePath(cacheRoot, sourceId, feedUrl);
   await mkdir(path.dirname(cachePath), { recursive: true });
 
   const previousProcessed: SourceCachedFeed = {
@@ -91,8 +94,8 @@ test('updateSourceFeedCache skips processing when there are no unprocessed items
   };
 
   const processed = await updateSourceFeedCache({
-    cacheRoot,
-    sourceHash,
+    cacheStore,
+    sourceId,
     sourcePath,
     feedUrl,
     mergedFeed,
