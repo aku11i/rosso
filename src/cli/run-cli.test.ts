@@ -23,6 +23,7 @@ async function writeSourceFile(directory: string) {
   await writeFile(
     sourcePath,
     [
+      'sourceId: example-source',
       'name: Example Source',
       'description: Demo source',
       'link: https://example.com',

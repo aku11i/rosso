@@ -28,6 +28,7 @@ export const sourceCachedFeedSchema = z.object({
 });
 
 export const sourceSchema = z.object({
+  sourceId: z.string().trim().min(1, 'sourceId is required'),
   name: z.string().trim().min(1, 'name is required'),
   description: z.string().trim().min(1, 'description is required'),
   link: z.string().trim().min(1, 'link is required'),

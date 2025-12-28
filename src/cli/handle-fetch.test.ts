@@ -6,7 +6,6 @@ import os from 'node:os';
 import { handleFetch } from './handle-fetch.ts';
 import { getFeedCachePath } from '../core/get-feed-cache-path.ts';
 import { getSourceFeedCachePath } from '../core/get-source-feed-cache-path.ts';
-import { getSourceIdFromPath } from '../utils/get-source-id-from-path.ts';
 
 const sampleRss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -20,11 +19,16 @@ const sampleRss = `<?xml version="1.0" encoding="UTF-8"?>
   </channel>
 </rss>`;
 
-async function setupSource(directory: string, filename = 'source.yaml') {
+async function setupSource(
+  directory: string,
+  filename = 'source.yaml',
+  sourceId = 'example-source',
+) {
   const sourcePath = path.join(directory, filename);
   await writeFile(
     sourcePath,
     [
+      `sourceId: ${sourceId}`,
       'name: Example Source',
       'description: Demo source',
       'link: https://example.com',
@@ -34,7 +38,7 @@ async function setupSource(directory: string, filename = 'source.yaml') {
     ].join('\n'),
     'utf8',
   );
-  return sourcePath;
+  return { sourcePath, sourceId };
 }
 
 test('handleFetch prints help when requested', async () => {
@@ -48,7 +52,7 @@ test('handleFetch fetches default source and writes cache', async () => {
   const cwd = process.cwd();
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-handle-fetch-'));
   const cacheDir = path.join(tempDir, 'cache');
-  const sourcePath = await setupSource(tempDir);
+  const { sourcePath, sourceId } = await setupSource(tempDir);
 
   const fetchMock = mock.method(globalThis, 'fetch', async () => ({
     ok: true,
@@ -64,7 +68,6 @@ test('handleFetch fetches default source and writes cache', async () => {
 
   const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
   const cacheContent = JSON.parse(await readFile(cachePath, 'utf8'));
-  const sourceId = await getSourceIdFromPath(sourcePath);
   const processedCachePath = getSourceFeedCachePath(
     cacheDir,
     sourceId,
@@ -87,7 +90,7 @@ test('handleFetch uses custom source path', async () => {
   const cwd = process.cwd();
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'rosso-handle-fetch-'));
   const cacheDir = path.join(tempDir, 'cache');
-  await setupSource(tempDir, 'custom.yaml');
+  const { sourceId } = await setupSource(tempDir, 'custom.yaml', 'custom-source');
 
   const fetchMock = mock.method(globalThis, 'fetch', async () => ({
     ok: true,
@@ -103,7 +106,6 @@ test('handleFetch uses custom source path', async () => {
 
   const cachePath = getFeedCachePath(cacheDir, 'https://example.com/feed.xml');
   const cacheContent = JSON.parse(await readFile(cachePath, 'utf8'));
-  const sourceId = await getSourceIdFromPath(path.join(tempDir, 'custom.yaml'));
   const processedCachePath = getSourceFeedCachePath(
     cacheDir,
     sourceId,
